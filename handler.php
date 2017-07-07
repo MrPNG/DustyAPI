@@ -10,19 +10,34 @@ header('Content-Type: application/json');
 if($API->checarIP($_SERVER['REMOTE_ADDR'])){
 // Se o IP do cara conferir, continuar
 
-/*
-Exemplo
-
 if(isset($_POST['type']) && $_POST['type'] == "banir"){
-  $API->banir($_POST['banido'], $_POST['duracao'], $_POST['banidor']);
-  echo json_encode(array("status"=>"Sucesso"));
+  echo $API->banirPlayer($_POST['uuid'], $_POST['motivo'], $_POST['punidor'], $_POST['tempo']);
 }
 
-if(isset($_POST['type']) && $_POST['type'] == "status"){
- echo $API->status($_POST['uuid']);
+if(isset($_POST['type']) && $_POST['type'] == "desbanir"){
+  echo $API->desbanirPlayerbanir($_POST['uuid']);
 }
 
-*/
+if(isset($_POST['type']) && $_POST['type'] == "mutar"){
+  echo $API->mutarPlayer($_POST['uuid'], $_POST['motivo'], $_POST['punidor'], $_POST['tempo']);
+}
+
+if(isset($_POST['type']) && $_POST['type'] == "desmutar"){
+  echo $API->desmutarPlayer($_POST['uuid']);
+}
+
+if(isset($_GET['type']) && $_GET['type'] == "status"){
+  echo $API->statusPlayer($_GET['uuid']);
+}
+
+if(isset($_GET['type']) && $_GET['type'] == "perfil"){
+  echo $API->perfilPlayer($_GET['uuid']);
+}
+
+if(isset($_POST['type']) && $_POST['type'] == "salvarperfil"){
+  echo $API->perfilPlayer($_POST['dataperfil']);
+}
+
 
 }else{
   echo json_encode(array("status"=>"IP não autorizado"));
