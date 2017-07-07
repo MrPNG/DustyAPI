@@ -37,13 +37,15 @@ Esses parâmetros devem ser usados somente se o ``type`` requerer eles
 Para facilitar a vida, foi criado mensagens de status que serão retornadas ao fazer um request, assim ficará mais fácil no plugin confirmar que a ação foi realizada ou não.
 O status retornará em um simples JSON:
 
-```
-{status: "Sucesso"}```
+`` 
+{status: "Sucesso"}
+``
 
 | ID | Descrição              |
 |----|------------------------|
 | 1  | Sucesso                |
 | 2  | Jogador não encontrado |
+
 Conforme for necessário, mais códigos de status irão ser criados
 
 -----
