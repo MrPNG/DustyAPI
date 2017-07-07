@@ -10,7 +10,7 @@ API para consultas do servidor sobre e para players.
   - handler.php: arquivo no qual todos os requests devem ser feito, no request deve conter todos os parâmetros necessários
 
 #### Parâmetros principais
-Parâmetros devem ser mandados junto com o request. Parâmetros ``type`` são **necessários** para o request 
+Parâmetros devem ser mandados junto com o request. Parâmetros ``type`` são **necessários** para o request
 
 | Tipo | Parâmetros ``type`` | Descrição                                                        |
 |------|---------------------|------------------------------------------------------------------|
@@ -32,6 +32,19 @@ Esses parâmetros devem ser usados somente se o ``type`` requerer eles
 | mutar, banir | motivo            | Motivo do mute/ban                                        |
 | mutar, banir | tempo             | Tempo do mute/ban                                         |
 | salvarperfil | dataperfil        | O perfil do jogador em uma array JSON, pode mandar vários |
+
+#### Lista de Status
+Para facilitar a vida, foi criado mensagens de status que serão retornadas ao fazer um request, assim ficará mais fácil no plugin confirmar que a ação foi realizada ou não.
+O status retornará em um simples JSON:
+
+```
+{status: "Sucesso"}```
+
+| ID | Descrição              |
+|----|------------------------|
+| 1  | Sucesso                |
+| 2  | Jogador não encontrado |
+Conforme for necessário, mais códigos de status irão ser criados
 
 -----
 
