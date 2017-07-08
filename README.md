@@ -38,10 +38,11 @@ Para facilitar a vida, foi criado mensagens de status que serão retornadas ao f
 O status retornará em um simples JSON:
 
 ```
-{status: "Sucesso"}```
+{status: 1}```
 
 | ID | Descrição              |
 |----|------------------------|
+| 0  | Status desconhecido    |
 | 1  | Sucesso                |
 | 2  | Jogador não encontrado |
 Conforme for necessário, mais códigos de status irão ser criados

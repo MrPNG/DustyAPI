@@ -8,12 +8,12 @@ class DustyAPI {
   public function StatusRetorno($id){
       switch ($id) {
         case 1:
-          $status = json_encode(array("status"=>"Sucesso"));
+          $status = json_encode(array("status"=>1));
           break;
         case 2:
-          $status = json_encode(array("status"=>"Jogador não encontrado."));
+          $status = json_encode(array("status"=>2));
         default:
-          $status = json_encode(array("status"=>"?"));
+          $status = json_encode(array("status"=>0));
       }
 
 
