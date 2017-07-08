@@ -2,6 +2,29 @@
 // funções para a API
 require 'config.php';
 
+class nameUtils {
+
+  // Função que checa se a UUID inserida é mais velha que 3 minutos
+  public function ageCheck($uuid){
+    
+
+  }
+
+  // Função que converte nomes para uuids
+  public function name2uuid($name){
+
+    return $uuid
+  }
+
+  // Função que converte uuids para nomes
+  public function uuid2name($uuid){
+
+    return $name;
+  }
+
+}
+
+
 class DustyAPI {
 
   // Função simples para retornar mensagens de retorno ao receber um request
@@ -12,11 +35,12 @@ class DustyAPI {
           break;
         case 2:
           $status = json_encode(array("status"=>2));
+          break;
         default:
           $status = json_encode(array("status"=>0));
       }
 
-
+      return $status;
   }
 
 
@@ -31,7 +55,7 @@ class DustyAPI {
   // Função para banir players. Favor usar -1 para bans permanentes.
   // Não esquecer da data do ban.
   public function banirPlayer($uuid, $punidor, $motivo, $tempo){
-    // conexão com MySQL e etc. em PDO
+    // conexão com MySQL e etc. em prepared statement
 
     // Retorna "1" em um json para confirmar o ban.
     return $this->StatusRetorno(1);

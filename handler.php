@@ -15,7 +15,7 @@ if(isset($_POST['type']) && $_POST['type'] == "banir"){
 }
 
 if(isset($_POST['type']) && $_POST['type'] == "desbanir"){
-  echo $API->desbanirPlayerbanir($_POST['uuid']);
+  echo $API->desbanirPlayer($_POST['uuid']);
 }
 
 if(isset($_POST['type']) && $_POST['type'] == "mutar"){
@@ -35,7 +35,7 @@ if(isset($_GET['type']) && $_GET['type'] == "perfil"){
 }
 
 if(isset($_POST['type']) && $_POST['type'] == "salvarperfil"){
-  echo $API->perfilPlayer($_POST['dataperfil']);
+  echo $API->salvarPerfil($_POST['dataperfil']);
 }
 
 
