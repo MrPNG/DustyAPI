@@ -5,22 +5,63 @@ require 'config.php';
 class nameUtils {
 
   // Função que checa se a UUID inserida é mais velha que 3 minutos
-  public function ageCheck($uuid){
-    
+  // e também faz mais um monte de coisa
+  public function uuid2name($uuid){
+    global $config;
+    $mysqli = new mysqli($config['database']['ip'], $config['database']['user'], $config['database']['password'], $config['database']['dbname']);
+
+    $stmt = $mysqli->prepare("SELECT * FROM `accounts` WHERE `uuid` = ?");
+    $stmt->bind_param("s", $uuid);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if($result->num_rows == 0){
+
+      $uuid = str_replace('-',"",$uuid);
+      $json = file_get_contents('http://api.mojang.com/user/profiles/'. $uuid .'/names', true);
+      $json = json_decode($json, true);
+      $nome = $json{0}{'name'};
+      $uuid = preg_replace("/^(\w{8})(\w{4})(\w{4})(\w{4})(\w{12})$/", "$1-$2-$3-$4-$5", $uuid);
+
+      $stmt = $mysqli->prepare("INSERT INTO `accounts` (uuid, username, last_update) VALUES (?, ?, ?)");
+      $unix = time();
+      $stmt->bind_param("ssi", $uuid, $nome, $unix);
+      $stmt->execute();
+
+
+    }elseif($result->num_rows == 1){
+      while($dados = $result->fetch_assoc()){
+        if($dados['last_update'] + 30 < time()){
+
+          $uuid = str_replace('-',"",$uuid);
+          $json = file_get_contents('http://api.mojang.com/user/profiles/'. $uuid .'/names', true);
+          $json = json_decode($json, true);
+          $nome = $json{0}{'name'};
+          $uuid = preg_replace("/^(\w{8})(\w{4})(\w{4})(\w{4})(\w{12})$/", "$1-$2-$3-$4-$5", $uuid);
+
+
+          $stmt = $mysqli->prepare("UPDATE `accounts` SET username= '" . $nome . "', last_update=" . time() . "  WHERE `uuid` = ?");
+          $stmt->bind_param("s", $uuid);
+          $stmt->execute();
+
+
+        }else{
+          $nome = $dados['username'];
+        }
+      }
+
+    }
+
+    return $nome;
 
   }
 
   // Função que converte nomes para uuids
   public function name2uuid($name){
 
-    return $uuid
+    return $uuid;
   }
 
-  // Função que converte uuids para nomes
-  public function uuid2name($uuid){
-
-    return $name;
-  }
 
 }
 
