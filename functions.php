@@ -98,7 +98,7 @@ class nameUtils {
 
 
         }else{
-          $nome = $dados['uuid'];
+          $uuid = $dados['uuid'];
         }
       }
 
