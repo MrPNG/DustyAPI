@@ -18,9 +18,9 @@ class nameUtils {
     if($result->num_rows == 0){
 
       $uuid = str_replace('-',"",$uuid);
-      $json = file_get_contents('http://api.mojang.com/user/profiles/'. $uuid .'/names', true);
+      $json = file_get_contents('https://sessionserver.mojang.com/session/minecraft/profile/'. $uuid, true);
       $json = json_decode($json, true);
-      $nome = $json{0}{'name'};
+      $nome = $json{'name'};
       $uuid = preg_replace("/^(\w{8})(\w{4})(\w{4})(\w{4})(\w{12})$/", "$1-$2-$3-$4-$5", $uuid);
 
       $stmt = $mysqli->prepare("INSERT INTO `accounts` (uuid, username, last_update) VALUES (?, ?, ?)");
@@ -34,9 +34,9 @@ class nameUtils {
         if($dados['last_update'] + 30 < time()){
 
           $uuid = str_replace('-',"",$uuid);
-          $json = file_get_contents('http://api.mojang.com/user/profiles/'. $uuid .'/names', true);
+          $json = file_get_contents('https://sessionserver.mojang.com/session/minecraft/profile/'. $uuid, true);
           $json = json_decode($json, true);
-          $nome = $json{0}{'name'};
+          $nome = $json{'name'};
           $uuid = preg_replace("/^(\w{8})(\w{4})(\w{4})(\w{4})(\w{12})$/", "$1-$2-$3-$4-$5", $uuid);
 
 
@@ -56,8 +56,54 @@ class nameUtils {
 
   }
 
-  // Função que converte nomes para uuids
+  // Função que converte nomes para uuids e faz mais um monte de coisa
   public function name2uuid($name){
+
+    global $config;
+    $mysqli = new mysqli($config['database']['ip'], $config['database']['user'], $config['database']['password'], $config['database']['dbname']);
+
+    $stmt = $mysqli->prepare("SELECT * FROM `accounts` WHERE `username` = ?");
+    $stmt->bind_param("s", $name);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if($result->num_rows == 0){
+
+      $json = file_get_contents('https://api.mojang.com/users/profiles/minecraft/'. $name, true);
+      $json = json_decode($json, true);
+      $uuid = $json{'id'};
+      $uuid = preg_replace("/^(\w{8})(\w{4})(\w{4})(\w{4})(\w{12})$/", "$1-$2-$3-$4-$5", $uuid);
+
+
+      $stmt = $mysqli->prepare("INSERT INTO `accounts` (uuid, username, last_update) VALUES (?, ?, ?)");
+      $unix = time();
+      $stmt->bind_param("ssi", $uuid, $name, $unix);
+      $stmt->execute();
+
+
+    }elseif($result->num_rows == 1){
+      while($dados = $result->fetch_assoc()){
+        if($dados['last_update'] + 30 < time()){
+
+          $json = file_get_contents('https://api.mojang.com/users/profiles/minecraft/'. $name, true);
+          $json = json_decode($json, true);
+          $uuid = $json{'id'};
+          $uuid = preg_replace("/^(\w{8})(\w{4})(\w{4})(\w{4})(\w{12})$/", "$1-$2-$3-$4-$5", $uuid);
+
+
+          $stmt = $mysqli->prepare("UPDATE `accounts` SET uuid= ?, last_update= ? WHERE `username` = ?");
+          $time = time();
+          $stmt->bind_param("sis", $uuid, $time, $name);
+          $stmt->execute();
+
+
+        }else{
+          $nome = $dados['uuid'];
+        }
+      }
+
+    }
+
 
     return $uuid;
   }
