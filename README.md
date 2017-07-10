@@ -46,6 +46,8 @@ O status retornará em um simples JSON:
 | 0  | Status desconhecido    |
 | 1  | Sucesso                |
 | 2  | Jogador não encontrado |
+| 3  | Não há o que atualizar |
+
 
 Conforme for necessário, mais códigos de status irão ser criados
 

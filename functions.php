@@ -123,6 +123,9 @@ class DustyAPI {
         case 2:
           $status = json_encode(array("status"=>2));
           break;
+        case 3:
+          $status = json_encode(array("status"=>3));
+          break;
         default:
           $status = json_encode(array("status"=>0));
       }
@@ -183,6 +186,15 @@ class DustyAPI {
 
   // Função que retorna perfil do jogador (kills, deaths, money, etc.)
   public function perfilPlayer($uuid){
+    global $config;
+    $mysqli = new mysqli($config['database']['ip'], $config['database']['user'], $config['database']['password'], $config['database']['dbname']);
+    $stmt = $mysqli->prepare("SELECT * FROM `perfil` WHERE `uuid` = ?");
+    $stmt->bind_param("s", $uuid);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    return json_encode($result->fetch_assoc());
+
 
   }
 
@@ -191,7 +203,33 @@ class DustyAPI {
   // Não esquecer de usar foreach, pois será recebido uma array json que pode conter mais de 1 jogadores
   public function salvarPerfil($data){
     // $data é uma array json com uuid do jogador e kills, deaths e etc.
+    global $config;
+    $data = json_decode($data, true);
+    $mysqli = new mysqli($config['database']['ip'], $config['database']['user'], $config['database']['password'], $config['database']['dbname']);
+    foreach ($data as $player) {
+      $stmt = $mysqli->prepare("SELECT * FROM `perfil` WHERE `uuid` = ?");
+      $stmt->bind_param("s", $player['uuid']);
+      $stmt->execute();
+      $result = $stmt->get_result();
 
+      if($result->num_rows == 0){
+        $stmt = $mysqli->prepare("INSERT INTO `perfil` (uuid, kills, deaths, killStreak, maxKillStreak, xp, money, hgWins, hgLoses) VALUE (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("siiiiddii", $player['uuid'], $player['kills'], $player['deaths'], $player['killStreak'], $player['maxKillStreak'], $player['xp'], $player['money'], $player['hgWins'], $player['hgLoses']);
+        $stmt->execute();
+
+      }else{
+        $stmt = $mysqli->prepare("UPDATE `perfil` SET kills=?, deaths=?, killStreak=?, maxKillStreak=?, xp=?, money=?, hgWins=?, hgLoses=? WHERE `uuid` = ?");
+        $stmt->bind_param("iiiiddiis", $player['kills'], $player['deaths'], $player['killStreak'], $player['maxKillStreak'], $player['xp'], $player['money'], $player['hgWins'], $player['hgLoses'], $player['uuid']);
+        $stmt->execute();
+      }
+
+    }
+
+    if($stmt->affected_rows == 0){
+      return $this->StatusRetorno(3);
+    }else{
+      return $this->StatusRetorno(1);
+    }
   }
 
 

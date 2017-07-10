@@ -2,11 +2,10 @@
 // Os pedidos GET/POST deverão ser feitos para esse arquivo
 // que só dara um echo bem formatado em JSON de volta.
 
-
+require 'config.php';
 require 'functions.php';
 $API = new DustyAPI;
 header('Content-Type: application/json');
-
 if($API->checarIP($_SERVER['REMOTE_ADDR'])){
 // Se o IP do cara conferir, continuar
 
