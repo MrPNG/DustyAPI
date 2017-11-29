@@ -31,7 +31,7 @@ class nameUtils {
 
     }elseif($result->num_rows == 1){
       while($dados = $result->fetch_assoc()){
-        if($dados['last_update'] + 30 < time()){
+        if($dados['last_update'] + 90 < time()){
 
           $uuid = str_replace('-',"",$uuid);
           $json = file_get_contents('https://sessionserver.mojang.com/session/minecraft/profile/'. $uuid, true);
@@ -83,7 +83,7 @@ class nameUtils {
 
     }elseif($result->num_rows == 1){
       while($dados = $result->fetch_assoc()){
-        if($dados['last_update'] + 30 < time()){
+        if($dados['last_update'] + 90 < time()){
 
           $json = file_get_contents('https://api.mojang.com/users/profiles/minecraft/'. $name, true);
           $json = json_decode($json, true);
@@ -112,7 +112,7 @@ class nameUtils {
 }
 
 
-class DustyAPI {
+class DustyAPI extends nameUtils {
 
   // Função simples para retornar mensagens de retorno ao receber um request
   public function StatusRetorno($id){
@@ -193,8 +193,11 @@ class DustyAPI {
     $stmt->execute();
     $result = $stmt->get_result();
 
-    return json_encode($result->fetch_assoc());
-
+    if($result->num_rows == 0){
+      return $this->StatusRetorno(2);
+    }else{
+      return json_encode($result->fetch_assoc());
+    }
 
   }
 
@@ -231,6 +234,50 @@ class DustyAPI {
       return $this->StatusRetorno(1);
     }
   }
+
+  // Função para retornar os top jogdadores dado um filtro especíco
+  // E um $max para saber quantos players deve retornar e $ordem para DESCendente ou ASCendente
+  public function getLeaderboard($type, $max, $ordem){
+    global $config;
+
+      // Cache básico baseado em arquivos
+      $cache = $type . "_" . $ordem . "_" . $max . ".json";
+      if (file_exists($cache) && (filemtime($cache) > (time() - 60 * 10))) {
+          $leaderboard = file_get_contents($cache);
+
+      }else{
+
+        $mysqli = new mysqli($config['database']['ip'], $config['database']['user'], $config['database']['password'], $config['database']['dbname']);
+        $stmt = $mysqli->prepare("SELECT uuid," . $type . " FROM `perfil` ORDER BY " . $type . " " . $ordem . " LIMIT ?");
+        $stmt->bind_param("i", $max);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+
+          $array = array();
+          while($dados = $result->fetch_assoc()){
+          $array[] = $dados;
+          }
+
+          //essa parte do código circula pelas uuids e converte cada uma para nome legível
+          foreach ($array as $key => $player) {
+              $playername                  = $this->uuid2name($player['uuid']);
+              $array[$key]['uuid']         = $playername;
+          }
+
+        $leaderboard_json = json_encode($array);
+        $fh = fopen($cache, 'w+') or die('Erro ao salvar o cache do leaderboard. Se o problema persistir, comunique um administrador');
+        fwrite($fh, $leaderboard_json);
+        fclose($fh);
+        $leaderboard = file_get_contents($cache);
+
+    }
+    return $leaderboard;
+
+
+  }
+
+
 
 
 }
