@@ -274,8 +274,25 @@ class DustyAPI extends nameUtils {
     }
     return $leaderboard;
 
-
   }
+
+    // Função parar carregar os itens da loja de acordo com o tipo deles (kit, vantagem, vip, etc)
+    public function getItensLoja($type){
+      global $config;
+
+      $mysqli = new mysqli($config['database']['ip'], $config['database']['user'], $config['database']['password'], $config['database']['dbname']);
+      $stmt = $mysqli->prepare("SELECT * FROM `loja_items` WHERE `itemType` = ?");
+      $stmt->bind_param("i", $type);
+      $stmt->execute();
+      $result = $stmt->get_result();
+
+        $array = array();
+        while($dados = $result->fetch_assoc()){
+        $array[] = $dados;
+        }
+      return json_encode($array);
+    }
+
 
 
 
