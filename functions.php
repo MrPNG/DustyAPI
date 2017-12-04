@@ -293,8 +293,97 @@ class DustyAPI extends nameUtils {
       return json_encode($array);
     }
 
+    // Função para dar kit a um player
+    public function addKit($kit, $uuid){
+      global $config;
+      $mysqli = new mysqli($config['database']['ip'], $config['database']['user'], $config['database']['password'], $config['database']['dbname']);
+      $stmt = $mysqli->prepare("INSERT INTO `players_kits` (uuid, kit) VALUES (?, ?)");
+      $stmt->bind_param("si", $uuid, $kit);
+      $stmt->execute();
 
+      return $this->StatusRetorno(1);
+    }
 
+    // Função para dar vantagem a um player
+    public function addVantagem($vantagem, $uuid, $datafinal){
+      global $config;
+      $mysqli = new mysqli($config['database']['ip'], $config['database']['user'], $config['database']['password'], $config['database']['dbname']);
+      
+      $stmt = $mysqli->prepare("INSERT INTO `players_vantagens` (uuid, vantagem, datafinal) VALUES (?, ?, ?)");
+      $stmt->bind_param("sis", $uuid, $vantagem, $datafinal);
+      $stmt->execute();
+
+      return $this->StatusRetorno(1);
+    }
+
+    // Função para dar vip a um player
+    public function addVIP($vip, $uuid, $datafinal){
+      global $config;
+      $mysqli = new mysqli($config['database']['ip'], $config['database']['user'], $config['database']['password'], $config['database']['dbname']);
+      $stmt = $mysqli->prepare("INSERT INTO `players_vip` (uuid, vip, datafinal) VALUES (?, ?, ?)");
+      $stmt->bind_param("sis", $uuid, $vip, $datafinal);
+      $stmt->execute();
+
+      return $this->StatusRetorno(1);
+    }
+
+    // Função para dar identificar que tipo de compra é
+    public function getItemType($id){
+      global $config;
+      $mysqli = new mysqli($config['database']['ip'], $config['database']['user'], $config['database']['password'], $config['database']['dbname']);
+      $stmt = $mysqli->prepare("SELECT * FROM `loja_items` WHERE `itemID` = ?");
+      $stmt->bind_param("i", $id);
+      $stmt->execute();
+      $result = $stmt->get_result();
+
+        while($dados = $result->fetch_assoc()){
+          $id = $dados['itemType'];
+        }
+
+      return $id;
+    }
+
+    public function getItemDuration($id){
+      global $config;
+      $mysqli = new mysqli($config['database']['ip'], $config['database']['user'], $config['database']['password'], $config['database']['dbname']);
+      $stmt = $mysqli->prepare("SELECT * FROM `loja_items` WHERE `itemID` = ?");
+      $stmt->bind_param("s", $id);
+      $stmt->execute();
+      $result = $stmt->get_result();
+
+        while($dados = $result->fetch_assoc()){
+          $duration = $dados['itemDuration'];
+        }
+
+      return $duration;
+    }
+
+    // Função para descobrir o comprador de certo item
+    public function getBuyer($transID){
+      global $config;
+      $mysqli = new mysqli($config['database']['ip'], $config['database']['user'], $config['database']['password'], $config['database']['dbname']);
+      $stmt = $mysqli->prepare("SELECT * FROM `players_compras` WHERE `transaction` = ?");
+      $stmt->bind_param("s", $transID);
+      $stmt->execute();
+      $result = $stmt->get_result();
+
+        while($dados = $result->fetch_assoc()){
+          $uuid = $dados['uuid'];
+        }
+
+      return $uuid;
+    }
+
+    // Função para adicionar um comprador na lista
+    public function addBuyer($uuid, $transaction){
+      global $config;
+      $mysqli = new mysqli($config['database']['ip'], $config['database']['user'], $config['database']['password'], $config['database']['dbname']);
+      $stmt = $mysqli->prepare("INSERT INTO `players_compras` (uuid, transaction) VALUES (?, ?)");
+      $stmt->bind_param("ss", $uuid, $transaction);
+      $stmt->execute();
+
+      return $this->StatusRetorno(1);
+    }
 
 
 }
