@@ -68,7 +68,10 @@ class nameUtils {
     $result = $stmt->get_result();
 
     if($result->num_rows == 0){
-
+      $headers = get_headers("https://api.mojang.com/users/profiles/minecraft/" . $name);
+      if($headers[0] == "HTTP/1.1 204 No Content"){
+        $uuid = 2;
+      }else{
       $json = file_get_contents('https://api.mojang.com/users/profiles/minecraft/'. $name, true);
       $json = json_decode($json, true);
       $uuid = $json{'id'};
@@ -79,7 +82,7 @@ class nameUtils {
       $unix = time();
       $stmt->bind_param("ssi", $uuid, $name, $unix);
       $stmt->execute();
-
+      }
 
     }elseif($result->num_rows == 1){
       while($dados = $result->fetch_assoc()){
@@ -196,7 +199,11 @@ class DustyAPI extends nameUtils {
     if($result->num_rows == 0){
       return $this->StatusRetorno(2);
     }else{
-      return json_encode($result->fetch_assoc());
+      $array = array();
+      $array = $result->fetch_assoc();
+
+
+      return json_encode($array);
     }
 
   }
@@ -308,7 +315,7 @@ class DustyAPI extends nameUtils {
     public function addVantagem($vantagem, $uuid, $datafinal){
       global $config;
       $mysqli = new mysqli($config['database']['ip'], $config['database']['user'], $config['database']['password'], $config['database']['dbname']);
-      
+
       $stmt = $mysqli->prepare("INSERT INTO `players_vantagens` (uuid, vantagem, datafinal) VALUES (?, ?, ?)");
       $stmt->bind_param("sis", $uuid, $vantagem, $datafinal);
       $stmt->execute();
@@ -379,10 +386,48 @@ class DustyAPI extends nameUtils {
       global $config;
       $mysqli = new mysqli($config['database']['ip'], $config['database']['user'], $config['database']['password'], $config['database']['dbname']);
       $stmt = $mysqli->prepare("INSERT INTO `players_compras` (uuid, transaction) VALUES (?, ?)");
-      $stmt->bind_param("ss", $uuid, $transaction);
+      $code = str_replace("-", "", $transaction);
+      $stmt->bind_param("ss", $uuid, $code);
       $stmt->execute();
 
       return $this->StatusRetorno(1);
+    }
+
+    public function getCompras($uuid){
+      global $config;
+      $mysqli = new mysqli($config['database']['ip'], $config['database']['user'], $config['database']['password'], $config['database']['dbname']);
+
+      $array = array();
+
+      $stmt = $mysqli->prepare("SELECT kit FROM `players_kits` WHERE `uuid` = ?");
+      $stmt->bind_param("s", $uuid);
+      $stmt->execute();
+      $result_vip = $stmt->get_result();
+
+      while($result_viparray = $result_vip->fetch_assoc()){
+        $array['compras']['kit'][] = $result_viparray['kit'];
+      }
+
+      $stmt = $mysqli->prepare("SELECT vantagem, datafinal FROM `players_vantagens` WHERE `uuid` = ?");
+      $stmt->bind_param("s", $uuid);
+      $stmt->execute();
+      $result_vant = $stmt->get_result();
+
+      while($result_vantarray = $result_vant->fetch_assoc()){
+        $array['compras']['vantagem'][] = $result_vantarray;
+      }
+
+      $stmt = $mysqli->prepare("SELECT vip, datafinal FROM `players_vip` WHERE `uuid` = ?");
+      $stmt->bind_param("s", $uuid);
+      $stmt->execute();
+      $result_vip = $stmt->get_result();
+
+      while($result_viparray = $result_vip->fetch_assoc()){
+        $array['compras']['vip'][] = $result_viparray;
+      }
+
+      return json_encode($array);
+
     }
 
 
