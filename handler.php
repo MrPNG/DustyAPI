@@ -37,6 +37,10 @@ if(isset($_POST['type']) && $_POST['type'] == "salvarperfil"){
   echo $API->salvarPerfil($_POST['dataperfil']);
 }
 
+if(isset($_GET['type']) && $_GET['type'] == "getcompras"){
+  echo $API->getCompras($_GET['uuid']);
+}
+
 
 }else{
   echo json_encode(array("status"=>"IP não autorizado"));

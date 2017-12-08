@@ -21,6 +21,8 @@ Parâmetros devem ser mandados junto com o request. Parâmetros ``type`` são **
 | GET  | status              | Retorna o status de um jogador, se ele está banido, mutado, etc. |
 | GET  | perfil              | Retorna o perfil do jogador. Kills, deaths, money, etc           |
 | POST | salvarperfil        | Salva o perfil de um ou vários jogadores                         |
+| GET  | getcompras          | Retorna as compras de um jogador                                 |
+
 
 #### Parâmetros complementares
 Esses parâmetros devem ser usados somente se o ``type`` requerer eles
