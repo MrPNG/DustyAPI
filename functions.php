@@ -242,6 +242,7 @@ class DustyAPI extends nameUtils {
     }
   }
 
+  // função para salvar clans
   public function salvarClan($data){
     // $data é uma array json com as informações do clan.
     global $config;
@@ -277,6 +278,40 @@ class DustyAPI extends nameUtils {
       return $this->StatusRetorno(1);
     }
   }
+
+  // Função que retorna perfil do clan (kills, deaths, money, etc.)
+  public function perfilClan($uuid){
+    global $config;
+    $mysqli = new mysqli($config['database']['ip'], $config['database']['user'], $config['database']['password'], $config['database']['dbname']);
+    $stmt = $mysqli->prepare("SELECT uuid, name, tag, kills, deaths, xp, clanVsClanWins, clanVsClanLosses, leader, members FROM `clans_info` WHERE `uuid` = ?");
+    $stmt->bind_param("s", $uuid);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if($result->num_rows == 0){
+      return $this->StatusRetorno(2);
+    }else{
+      $claninfo = $result->fetch_assoc();
+      $clanmembers = explode(",", $claninfo['members']);
+      $array = array("uuid" => $claninfo['uuid'],
+                      "name" => $claninfo['name'],
+                      "tag" => $claninfo['tag'],
+                      "kills" => $claninfo['kills'],
+                      "deaths" => $claninfo['deaths'],
+                      "xp" => $claninfo['xp'],
+                      "clanVsClanWins" => $claninfo['clanVsClanWins'],
+                      "clanVsClanLosses" => $claninfo['clanVsClanLosses'],
+                      "leader" => $claninfo['leader'],
+                      "members" => $clanmembers
+                    );
+
+
+
+      return json_encode($array);
+    }
+
+  }
+
 
   // Função para retornar os top jogdadores dado um filtro especíco
   // E um $max para saber quantos players deve retornar e $ordem para DESCendente ou ASCendente

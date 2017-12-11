@@ -22,6 +22,8 @@ Parâmetros devem ser mandados junto com o request. Parâmetros ``type`` são **
 | GET  | perfil              | Retorna o perfil do jogador. Kills, deaths, money, etc           |
 | POST | salvarperfil        | Salva o perfil de um ou vários jogadores                         |
 | GET  | getcompras          | Retorna as compras de um jogador                                 |
+| POST | salvarclan          | Salva o perfil de um clan                                        |
+| GET  | perfilclan          | Retorna o perfil de um clan                                      |
 
 
 #### Parâmetros complementares
@@ -34,6 +36,8 @@ Esses parâmetros devem ser usados somente se o ``type`` requerer eles
 | mutar, banir | motivo            | Motivo do mute/ban                                        |
 | mutar, banir | tempo             | Tempo do mute/ban                                         |
 | salvarperfil | dataperfil        | O perfil do jogador em uma array JSON, pode mandar vários |
+| salvarclan   | dataclan          | As informações do clan em json.                           |
+
 
 #### Lista de Status
 Para facilitar a vida, foi criado mensagens de status que serão retornadas ao fazer um request, assim ficará mais fácil no plugin confirmar que a ação foi realizada ou não.

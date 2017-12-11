@@ -41,6 +41,15 @@ if(isset($_GET['type']) && $_GET['type'] == "getcompras"){
   echo $API->getCompras($_GET['uuid']);
 }
 
+if(isset($_POST['type']) && $_POST['type'] == "salvarclan"){
+  echo $API->salvarClan($_POST['dataclan']);
+}
+
+if(isset($_GET['type']) && $_GET['type'] == "perfilclan"){
+  echo $API->perfilClan($_GET['uuid']);
+}
+
+
 
 }else{
   echo json_encode(array("status"=>"IP não autorizado"));
