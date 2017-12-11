@@ -434,15 +434,17 @@ class DustyAPI extends nameUtils {
       global $config;
       $mysqli = new mysqli($config['database']['ip'], $config['database']['user'], $config['database']['password'], $config['database']['dbname']);
       $stmt = $mysqli->prepare("SELECT * FROM `players_compras` WHERE `transaction` = ?");
-      $stmt->bind_param("s", $transID);
+      $stmt->bind_param("s", $trans);
       $stmt->execute();
       $result = $stmt->get_result();
 
       if($result->num_rows == 1){
-        $result = 0;
+        $resultrows = 0;
+      }else{
+        $resultrows = 1;
       }
 
-      return $result;
+      return $resultrows;
     }
 
     // função para ver as compras de um player
