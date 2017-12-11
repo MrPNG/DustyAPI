@@ -242,6 +242,42 @@ class DustyAPI extends nameUtils {
     }
   }
 
+  public function salvarClan($data){
+    // $data é uma array json com as informações do clan.
+    global $config;
+    $data = json_decode($data, true);
+    $mysqli = new mysqli($config['database']['ip'], $config['database']['user'], $config['database']['password'], $config['database']['dbname']);
+    foreach ($data as $clan) {
+      $stmt = $mysqli->prepare("SELECT * FROM `clans_info` WHERE `uuid` = ?");
+      $stmt->bind_param("s", $clan['uuid']);
+      $stmt->execute();
+      $result = $stmt->get_result();
+
+      if($result->num_rows == 0){
+        $stmt = $mysqli->prepare("INSERT INTO `clans_info` (uuid, name, tag, kills, deaths, xp, clanVsClanWins, clanVsClanLosses, leader, members) VALUE (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $clansjson = json_decode($data, true);
+        $clan_members = $json['members'][0] . "," . $json['members'][1] . "," . $json['members'][2] . "," . $json['members'][3] . "," . $json['members'][4];
+
+        $stmt->bind_param("sssiidiiss", $clan['uuid'], $clan['name'], $clan['tag'], $clan['kills'], $clan['deaths'], $clan['xp'], $clan['clanVsClanWins'], $clan['clanVsClanLosses'], $clan['leader'], $clan_members);
+        $stmt->execute();
+
+      }else{
+        $clan_members = $json['members'][0] . "," . $json['members'][1] . "," . $json['members'][2] . "," . $json['members'][3] . "," . $json['members'][4];
+
+        $stmt = $mysqli->prepare("UPDATE `clans_info` SET uuid=?, name=?, tag=?, kills=?, deaths=?, xp=?, clanVsClanWins=?, clanVsClanLosses=?, leader=?, members=? WHERE `uuid` = ?");
+        $stmt->bind_param("sssiidiisss", $clan['uuid'], $clan['name'], $clan['tag'], $clan['kills'], $clan['deaths'], $clan['xp'], $clan['clanVsClanWins'], $clan['clanVsClanLosses'], $clan['leader'], $clan_members, $clan['uuid']);
+        $stmt->execute();
+      }
+
+    }
+
+    if($stmt->affected_rows == 0){
+      return $this->StatusRetorno(3);
+    }else{
+      return $this->StatusRetorno(1);
+    }
+  }
+
   // Função para retornar os top jogdadores dado um filtro especíco
   // E um $max para saber quantos players deve retornar e $ordem para DESCendente ou ASCendente
   public function getLeaderboard($type, $max, $ordem){
@@ -393,6 +429,23 @@ class DustyAPI extends nameUtils {
       return $this->StatusRetorno(1);
     }
 
+    // função para checar se já a compra ja foi cadastrada
+    public function checkTransaction($trans){
+      global $config;
+      $mysqli = new mysqli($config['database']['ip'], $config['database']['user'], $config['database']['password'], $config['database']['dbname']);
+      $stmt = $mysqli->prepare("SELECT * FROM `players_compras` WHERE `transaction` = ?");
+      $stmt->bind_param("s", $transID);
+      $stmt->execute();
+      $result = $stmt->get_result();
+
+      if($result->num_rows == 1){
+        $result = 0;
+      }
+
+      return $result;
+    }
+
+    // função para ver as compras de um player
     public function getCompras($uuid){
       global $config;
       $mysqli = new mysqli($config['database']['ip'], $config['database']['user'], $config['database']['password'], $config['database']['dbname']);
