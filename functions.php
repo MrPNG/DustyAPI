@@ -489,16 +489,16 @@ class DustyAPI extends nameUtils {
 
       $array = array();
 
-      $stmt = $mysqli->prepare("SELECT kit FROM `players_kits` WHERE `uuid` = ?");
+      $stmt = $mysqli->prepare("SELECT id, kit FROM `players_kits` WHERE `uuid` = ?");
       $stmt->bind_param("s", $uuid);
       $stmt->execute();
       $result_vip = $stmt->get_result();
 
       while($result_viparray = $result_vip->fetch_assoc()){
-        $array['compras']['kit'][] = $result_viparray['kit'];
+        $array['compras']['kit'][] = $result_viparray;
       }
 
-      $stmt = $mysqli->prepare("SELECT vantagem, datafinal FROM `players_vantagens` WHERE `uuid` = ?");
+      $stmt = $mysqli->prepare("SELECT id, vantagem, datafinal FROM `players_vantagens` WHERE `uuid` = ?");
       $stmt->bind_param("s", $uuid);
       $stmt->execute();
       $result_vant = $stmt->get_result();
@@ -507,7 +507,7 @@ class DustyAPI extends nameUtils {
         $array['compras']['vantagem'][] = $result_vantarray;
       }
 
-      $stmt = $mysqli->prepare("SELECT vip, datafinal FROM `players_vip` WHERE `uuid` = ?");
+      $stmt = $mysqli->prepare("SELECT id, vip, datafinal FROM `players_vip` WHERE `uuid` = ?");
       $stmt->bind_param("s", $uuid);
       $stmt->execute();
       $result_vip = $stmt->get_result();
