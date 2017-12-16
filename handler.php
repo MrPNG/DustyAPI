@@ -1,12 +1,18 @@
 <?php
-// Os pedidos GET/POST deverão ser feitos para esse arquivo
-// que só dara um echo bem formatado em JSON de volta.
+// Os pedidos GET/POST dever茫o ser feitos para esse arquivo
+// que s贸 dara um echo bem formatado em JSON de volta.
 
 require 'config.php';
 require 'functions.php';
 $API = new DustyAPI;
 header('Content-Type: application/json');
-if($API->checarIP($_SERVER['REMOTE_ADDR'])){
+if(!empty($_SERVER['HTTP_X_FORWARDED_FOR'])){
+  $ip = $_SERVER['REMOTE_ADDR'];
+}else{
+  $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+}
+
+if($API->checarIP($ip){
 // Se o IP do cara conferir, continuar
 
 if(isset($_POST['type']) && $_POST['type'] == "banir"){
@@ -58,6 +64,6 @@ if(isset($_GET['type']) && $_GET['type'] == "addcompra"){
 
 
 }else{
-  echo json_encode(array("status"=>"IP não autorizado"));
+  echo json_encode(array("status"=>"IP nao autorizado"));
 }
 ?>
