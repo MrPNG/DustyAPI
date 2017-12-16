@@ -50,7 +50,7 @@ if(isset($_GET['type']) && $_GET['type'] == "perfilclan"){
 }
 
 if(isset($_GET['type']) && $_GET['type'] == "addcompra"){
-  echo $API->addCompra($_GET['tipo'], $_GET['uuid'], $_GET['item'], $_GET['datafinal'], $_GET['action'], $_GET['id']);
+  echo $API->addCompra($_GET['action'], $_GET['json'], $_GET['id']);
 }
 
 

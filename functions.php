@@ -521,25 +521,26 @@ class DustyAPI extends nameUtils {
     }
 
     // função para adicionar/atualizar compras
-    public function addCompra($tipo, $uuid, $item, $datafinal, $action, $id){
+    public function addCompra($action, $json, $id){
       global $config;
+      $json = json_decode($json, true);
+
 
       if($action == "add"){
-        switch($tipo){
+        switch($json['tipo']){
           case 1:
-            $this->addKit($item, $uuid);
+            $this->addKit($json['item'], $json['uuid']);
           break;
           case 2:
-            $this->addVIP($item, $uuid, $datafinal);
+            $this->addVIP($json['item'], $json['uuid'], $json['datafinal']);
           break;
           case 3:
-            $this->addVantagem($item, $uuid, $datafinal);
+            $this->addVantagem($json['item'], $json['uuid'], $json['datafinal']);
           break;
         }
 
       }elseif ($action == "update") {
-
-        switch($tipo){
+        switch($json['tipo']){
           case 1:
             $table = "players_kits";
             $row = "kit";
@@ -557,7 +558,7 @@ class DustyAPI extends nameUtils {
           $mysqli = new mysqli($config['database']['ip'], $config['database']['user'], $config['database']['password'], $config['database']['dbname']);
 
           $stmt = $mysqli->prepare("UPDATE " . $table . " SET uuid=?, " . $row . "=?, datafinal=? WHERE `id` = ?");
-          $stmt->bind_param("ssii", $uuid, $item, $datafinal, $id);
+          $stmt->bind_param("ssii", $json['uuid'], $json['item'], $json['datafinal'], $id);
           $stmt->execute();
 
 
