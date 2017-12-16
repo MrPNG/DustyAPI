@@ -49,6 +49,12 @@ if(isset($_GET['type']) && $_GET['type'] == "perfilclan"){
   echo $API->perfilClan($_GET['uuid']);
 }
 
+if(isset($_GET['type']) && $_GET['type'] == "addcompra"){
+  echo $API->addCompra($_GET['tipo'], $_GET['uuid'], $_GET['item'], $_GET['datafinal'], $_GET['action'], $_GET['id']);
+}
+
+
+
 
 
 }else{
