@@ -12,7 +12,7 @@ if(!empty($_SERVER['HTTP_X_FORWARDED_FOR'])){
   $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
 }
 
-if($API->checarIP($ip){
+if($API->checarIP($ip)){
 // Se o IP do cara conferir, continuar
 
 if(isset($_POST['type']) && $_POST['type'] == "banir"){
