@@ -6,10 +6,12 @@ require 'config.php';
 require 'functions.php';
 $API = new DustyAPI;
 header('Content-Type: application/json');
-if(!empty($_SERVER['HTTP_X_FORWARDED_FOR'])){
-  $ip = $_SERVER['REMOTE_ADDR'];
-}else{
-  $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+    $ip = $_SERVER['HTTP_CLIENT_IP'];
+} elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+    $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+} else {
+    $ip = $_SERVER['REMOTE_ADDR'];
 }
 
 if($API->checarIP($ip)){

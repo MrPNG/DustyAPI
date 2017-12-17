@@ -223,13 +223,13 @@ class DustyAPI extends nameUtils {
       $result = $stmt->get_result();
 
       if($result->num_rows == 0){
-        $stmt = $mysqli->prepare("INSERT INTO `perfil` (uuid, kills, deaths, killStreak, maxKillStreak, xp, money, hgWins, hgLosses, oneVsOneWins, oneVsOneLosses, clan) VALUE (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("siiiiddiis", $player['uuid'], $player['kills'], $player['deaths'], $player['killStreak'], $player['maxKillStreak'], $player['xp'], $player['money'], $player['hgWins'], $player['hgLosses'], $player['clan']);
+        $stmt = $mysqli->prepare("INSERT INTO `perfil` (uuid, kills, deaths, killStreak, maxKillStreak, xp, money, hgWins, hgLosses, oneVsOneWins, oneVsOneLosses, clan) VALUE (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("siiiiddiiiis", $player['uuid'], $player['kills'], $player['deaths'], $player['killStreak'], $player['maxKillStreak'], $player['xp'], $player['money'], $player['hgWins'], $player['hgLosses'], $player['clan']);
         $stmt->execute();
 
       }else{
         $stmt = $mysqli->prepare("UPDATE `perfil` SET kills=?, deaths=?, killStreak=?, maxKillStreak=?, xp=?, money=?, hgWins=?, hgLosses=?, oneVsOneWins=?, oneVsOneLosses=?, clan=? WHERE `uuid` = ?");
-        $stmt->bind_param("iiiiddiiss", $player['kills'], $player['deaths'], $player['killStreak'], $player['maxKillStreak'], $player['xp'], $player['money'], $player['hgWins'], $player['hgLosses'], $player['oneVsOneWins'], $player['oneVsOneLosses'], $player['clan'], $player['uuid']);
+        $stmt->bind_param("iiiiddiiiiss", $player['kills'], $player['deaths'], $player['killStreak'], $player['maxKillStreak'], $player['xp'], $player['money'], $player['hgWins'], $player['hgLosses'], $player['oneVsOneWins'], $player['oneVsOneLosses'], $player['clan'], $player['uuid']);
         $stmt->execute();
       }
 
