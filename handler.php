@@ -57,8 +57,12 @@ if(isset($_GET['type']) && $_GET['type'] == "perfilclan"){
   echo $API->perfilClan($_GET['uuid']);
 }
 
-if(isset($_GET['type']) && $_GET['type'] == "addcompra"){
-  echo $API->addCompra($_GET['action'], $_GET['json'], $_GET['id']);
+if(isset($_POST['type']) && $_POST['type'] == "addcompra"){
+  echo $API->addCompra($_POST['action'], $_POST['json'], $_POST['id']);
+}
+
+if(isset($_GET['type']) && $_GET['type'] == "getLeaderboard"){
+  echo $API->getLeaderboard($_GET['tipo'], $_GET['max'], $_GET['ordem']);
 }
 
 

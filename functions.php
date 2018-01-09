@@ -38,10 +38,10 @@ class nameUtils {
           $json = json_decode($json, true);
           $nome = $json{'name'};
           $uuid = preg_replace("/^(\w{8})(\w{4})(\w{4})(\w{4})(\w{12})$/", "$1-$2-$3-$4-$5", $uuid);
+          $time = time();
 
-
-          $stmt = $mysqli->prepare("UPDATE `accounts` SET username= '" . $nome . "', last_update=" . time() . "  WHERE `uuid` = ?");
-          $stmt->bind_param("s", $uuid);
+          $stmt = $mysqli->prepare("UPDATE `accounts` SET username=?, last_update=?  WHERE `uuid` = ?");
+          $stmt->bind_param("sis", $nome, $time, $uuid);
           $stmt->execute();
 
 
@@ -223,13 +223,13 @@ class DustyAPI extends nameUtils {
       $result = $stmt->get_result();
 
       if($result->num_rows == 0){
-        $stmt = $mysqli->prepare("INSERT INTO `perfil` (uuid, kills, deaths, killStreak, maxKillStreak, xp, money, hgWins, hgLosses, oneVsOneWins, oneVsOneLosses, clan) VALUE (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("siiiiddiiiis", $player['uuid'], $player['kills'], $player['deaths'], $player['killStreak'], $player['maxKillStreak'], $player['xp'], $player['money'], $player['hgWins'], $player['hgLosses'], $player['clan']);
+        $stmt = $mysqli->prepare("INSERT INTO `perfil` (uuid, kills, deaths, killStreak, maxKillStreak, xp, money, hgWins, hgLosses, oneVsOneWins, oneVsOneLosses, gladiatorWins, gladiatorLosses, clan) VALUE (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("siiiiddiiiiiis", $player['uuid'], $player['kills'], $player['deaths'], $player['killStreak'], $player['maxKillStreak'], $player['xp'], $player['money'], $player['hgWins'], $player['hgLosses'], $player['oneVsOneWins'], $player['oneVsOneLosses'], $player['gladiatorWins'], $player['gladiatorLosses'], $player['clan']);
         $stmt->execute();
 
       }else{
-        $stmt = $mysqli->prepare("UPDATE `perfil` SET kills=?, deaths=?, killStreak=?, maxKillStreak=?, xp=?, money=?, hgWins=?, hgLosses=?, oneVsOneWins=?, oneVsOneLosses=?, clan=? WHERE `uuid` = ?");
-        $stmt->bind_param("iiiiddiiiiss", $player['kills'], $player['deaths'], $player['killStreak'], $player['maxKillStreak'], $player['xp'], $player['money'], $player['hgWins'], $player['hgLosses'], $player['oneVsOneWins'], $player['oneVsOneLosses'], $player['clan'], $player['uuid']);
+        $stmt = $mysqli->prepare("UPDATE `perfil` SET kills=?, deaths=?, killStreak=?, maxKillStreak=?, xp=?, money=?, hgWins=?, hgLosses=?, oneVsOneWins=?, oneVsOneLosses=?, gladiatorWins=?, gladiatorLosses=?, clan=? WHERE `uuid` = ?");
+        $stmt->bind_param("iiiiddiiiiiiss", $player['kills'], $player['deaths'], $player['killStreak'], $player['maxKillStreak'], $player['xp'], $player['money'], $player['hgWins'], $player['hgLosses'], $player['oneVsOneWins'], $player['oneVsOneLosses'], $player['gladiatorWins'], $player['gladiatorLosses'], $player['clan'], $player['uuid']);
         $stmt->execute();
       }
 
@@ -256,14 +256,13 @@ class DustyAPI extends nameUtils {
 
       if($result->num_rows == 0){
         $stmt = $mysqli->prepare("INSERT INTO `clans_info` (uuid, name, tag, kills, deaths, xp, clanVsClanWins, clanVsClanLosses, leader, members) VALUE (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        $clansjson = json_decode($data, true);
-        $clan_members = $json['members'][0] . "," . $json['members'][1] . "," . $json['members'][2] . "," . $json['members'][3] . "," . $json['members'][4];
+        $clan_members = implode(",", $clan['members']);
 
         $stmt->bind_param("sssiidiiss", $clan['uuid'], $clan['name'], $clan['tag'], $clan['kills'], $clan['deaths'], $clan['xp'], $clan['clanVsClanWins'], $clan['clanVsClanLosses'], $clan['leader'], $clan_members);
         $stmt->execute();
 
       }else{
-        $clan_members = $json['members'][0] . "," . $json['members'][1] . "," . $json['members'][2] . "," . $json['members'][3] . "," . $json['members'][4];
+        $clan_members = implode(",", $clan['members']);
 
         $stmt = $mysqli->prepare("UPDATE `clans_info` SET uuid=?, name=?, tag=?, kills=?, deaths=?, xp=?, clanVsClanWins=?, clanVsClanLosses=?, leader=?, members=? WHERE `uuid` = ?");
         $stmt->bind_param("sssiidiisss", $clan['uuid'], $clan['name'], $clan['tag'], $clan['kills'], $clan['deaths'], $clan['xp'], $clan['clanVsClanWins'], $clan['clanVsClanLosses'], $clan['leader'], $clan_members, $clan['uuid']);
@@ -320,7 +319,7 @@ class DustyAPI extends nameUtils {
 
       // Cache básico baseado em arquivos
       $cache = $type . "_" . $ordem . "_" . $max . ".json";
-      if (file_exists($cache) && (filemtime($cache) > (time() - 60 * 10))) {
+      if (file_exists($cache) && (filemtime($cache) > (time() - 60 * 2))) {
           $leaderboard = file_get_contents($cache);
 
       }else{
@@ -337,11 +336,6 @@ class DustyAPI extends nameUtils {
           $array[] = $dados;
           }
 
-          //essa parte do código circula pelas uuids e converte cada uma para nome legível
-          foreach ($array as $key => $player) {
-              $playername                  = $this->uuid2name($player['uuid']);
-              $array[$key]['uuid']         = $playername;
-          }
 
         $leaderboard_json = json_encode($array);
         $fh = fopen($cache, 'w+') or die('Erro ao salvar o cache do leaderboard. Se o problema persistir, comunique um administrador');
@@ -421,6 +415,24 @@ class DustyAPI extends nameUtils {
       return $id;
     }
 
+    // Função para ver informações de um item
+    public function getItem($id){
+      global $config;
+      $mysqli = new mysqli($config['database']['ip'], $config['database']['user'], $config['database']['password'], $config['database']['dbname']);
+      $stmt = $mysqli->prepare("SELECT * FROM `loja_items` WHERE `itemID` = ?");
+      $stmt->bind_param("i", $id);
+      $stmt->execute();
+      $result = $stmt->get_result();
+    
+        $dados = array();
+        while($dados = $result->fetch_assoc()){
+          $id = $dados;
+        }
+
+      return json_encode($id);
+    }
+
+    // função para ver duração do item
     public function getItemDuration($id){
       global $config;
       $mysqli = new mysqli($config['database']['ip'], $config['database']['user'], $config['database']['password'], $config['database']['dbname']);
