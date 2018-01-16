@@ -223,7 +223,7 @@ class DustyAPI extends nameUtils {
   public function getClan($uuid){
     global $config;
     $mysqli = new mysqli($config['database']['ip'], $config['database']['user'], $config['database']['password'], $config['database']['dbname']);
-    $stmt = $mysqli->prepare("SELECT * FROM `raid_times` WHERE `uuid` = ?");
+    $stmt = $mysqli->prepare("SELECT * FROM `raid_teams` WHERE `uuid` = ?");
     $stmt->bind_param("s", $uuid);
     $stmt->execute();
     $result = $stmt->get_result();
