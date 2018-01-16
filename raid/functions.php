@@ -127,7 +127,7 @@ class DustyAPI extends nameUtils {
         $clan_members = implode(",", $clan['membros']);
 
 
-        $stmt->bind_param("sssss", $clan['nome'], $clan['tag'], $clan_members, $clan['leader'], $arvore['uuid']);
+        $stmt->bind_param("sssss", $clan['nome'], $clan['tag'], $clan_members, $clan['leader'], $clan['uuid']);
         $stmt->execute();
       }
 
