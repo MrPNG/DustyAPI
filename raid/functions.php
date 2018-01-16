@@ -116,7 +116,7 @@ class DustyAPI extends nameUtils {
 
       if($result->num_rows == 0){
         $stmt = $mysqli->prepare("INSERT INTO `raid_teams` (uuid, nome, tag, membros, leader) VALUE (?, ?, ?, ?, ?)");
-        $clan_members = implode(",", $clan['members']);
+        $clan_members = implode(",", $clan['membros']);
 
 
         $stmt->bind_param("sssss", $clan['uuid'], $clan['nome'], $clan['tag'], $clan_members, $clan['leader']);
@@ -124,7 +124,7 @@ class DustyAPI extends nameUtils {
 
       }else{
         $stmt = $mysqli->prepare("UPDATE `raid_teams` SET nome, tag, membros, leader WHERE `uuid` = ?");
-        $clan_members = implode(",", $clan['members']);
+        $clan_members = implode(",", $clan['membros']);
 
 
         $stmt->bind_param("sssss", $clan['nome'], $clan['tag'], $clan_members, $clan['leader'], $arvore['uuid']);
@@ -232,7 +232,7 @@ class DustyAPI extends nameUtils {
       return 2;
     }else{
       $claninfo = $result->fetch_assoc();
-      $clanmembers = explode(",", $claninfo['members']);
+      $clanmembers = explode(",", $claninfo['membros']);
       $array = array("uuid" => $claninfo['uuid'],
                       "name" => $claninfo['nome'],
                       "tag" => $claninfo['tag'],
