@@ -51,6 +51,22 @@ if(isset($_GET['type']) && $_GET['type'] == "team"){
   echo $API->getClan($_GET['uuid']);
 }
 
+if(isset($_GET['type']) && $_GET['type'] == "addplayerwarp"){
+  echo $API->addWarpPlayer($_GET['data']);
+}
+
+if(isset($_GET['type']) && $_GET['type'] == "addteamwarp"){
+  echo $API->addWarpTeam($_GET['data']);
+}
+
+
+if(isset($_GET['type']) && $_GET['type'] == "delwarpplayer"){
+  echo $API->delWarpPlayer($_GET['data']);
+}
+
+if(isset($_GET['type']) && $_GET['type'] == "delwarpteam"){
+  echo $API->delWarpTeam($_GET['data']);
+}
 
 
 

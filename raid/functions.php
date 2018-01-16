@@ -250,21 +250,93 @@ class DustyAPI extends nameUtils {
 
   // função para criar/atualizar warp de players
   public function addWarpPlayer($data){
+    global $config;
+    $data = json_decode($data, true);
+    $mysqli = new mysqli($config['database']['ip'], $config['database']['user'], $config['database']['password'], $config['database']['dbname']);
+    foreach ($data as $warp) {
+      $stmt = $mysqli->prepare("SELECT * FROM `raid_players_warps` WHERE `uuidusty` = ? AND `name` = ?");
+      $stmt->bind_param("ss", $warp['uuidusty'], $warp['name']);
+      $stmt->execute();
+      $result = $stmt->get_result();
+
+      if($result->num_rows == 0){
+        $stmt = $mysqli->prepare("INSERT INTO `raid_players_warps` (uuidusty, x, y, z, name) VALUE (?, ?, ?, ?, ?)");
+        $stmt->bind_param("siiis", $warp['uuidusty'], $warp['x'], $warp['y'], $warp['z'], $warp['name']);
+        $stmt->execute();
+
+      }else{
+        $stmt = $mysqli->prepare("UPDATE `raid_players_warps` SET x, y, z, name WHERE `uuidusty` = ? AND `name` = ?");
+        $stmt->bind_param("iiisss", $warp['x'], $warp['y'], $warp['z'], $warp['name'], $warp['uuidusty'], $warp['name']);
+        $stmt->execute();
+      }
+
+    }
+
+    if($stmt->affected_rows == 0){
+      return 3;
+    }else{
+      return 1;
+    }
+
 
   }
 
   // função para deletar warps de player
   public function delWarpPlayer($data){
+    global $config;
+    $mysqli = new mysqli($config['database']['ip'], $config['database']['user'], $config['database']['password'], $config['database']['dbname']);
+    $stmt = $mysqli->prepare("DELETE FROM `raid_players_warps` WHERE `uuidusty` = ? AND name = ?");
+    foreach($data as $warp){
+      $stmt->bind_param("ss", $data['uuidusty'], $data['name']);
+      $stmt->execute();
+    }
+
 
   }
 
   // função para criar/atualizar warp de times
   public function addWarpTeam($data){
+    global $config;
+    $data = json_decode($data, true);
+    $mysqli = new mysqli($config['database']['ip'], $config['database']['user'], $config['database']['password'], $config['database']['dbname']);
+    foreach ($data as $warp) {
+      $stmt = $mysqli->prepare("SELECT * FROM `raid_teams_warps` WHERE `uuid` = ? AND `name` = ?");
+      $stmt->bind_param("ss", $warp['uuid'], $warp['name']);
+      $stmt->execute();
+      $result = $stmt->get_result();
+
+      if($result->num_rows == 0){
+        $stmt = $mysqli->prepare("INSERT INTO `raid_players_warps` (uuidusty, x, y, z, name) VALUE (?, ?, ?, ?, ?)");
+        $stmt->bind_param("siiis", $warp['uuid'], $warp['x'], $warp['y'], $warp['z'], $warp['name']);
+        $stmt->execute();
+
+      }else{
+        $stmt = $mysqli->prepare("UPDATE `raid_players_warps` SET x, y, z, name WHERE `uuid` = ? AND `name` = ?");
+        $stmt->bind_param("iiisss", $warp['x'], $warp['y'], $warp['z'], $warp['name'], $warp['uuid'], $warp['name']);
+        $stmt->execute();
+      }
+
+    }
+
+    if($stmt->affected_rows == 0){
+      return 3;
+    }else{
+      return 1;
+    }
+
 
   }
 
   // função pra deletar warp de times
   public function delWarpTeam($data){
+    global $config;
+    $mysqli = new mysqli($config['database']['ip'], $config['database']['user'], $config['database']['password'], $config['database']['dbname']);
+    $stmt = $mysqli->prepare("DELETE FROM `raid_teams_warps` WHERE `uuid` = ? AND name = ?");
+    foreach($data as $warp){
+      $stmt->bind_param("ss", $data['uuid'], $data['name']);
+      $stmt->execute();
+    }
+
 
   }
 
