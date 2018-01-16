@@ -105,6 +105,40 @@ class DustyAPI extends nameUtils {
 
   // função para criar clans
   public function salvarClan($data){
+    global $config;
+    $data = json_decode($data, true);
+    $mysqli = new mysqli($config['database']['ip'], $config['database']['user'], $config['database']['password'], $config['database']['dbname']);
+    foreach ($data as $clan) {
+      $stmt = $mysqli->prepare("SELECT * FROM `raid_teams` WHERE `uuid` = ?");
+      $stmt->bind_param("s", $clan['uuid']);
+      $stmt->execute();
+      $result = $stmt->get_result();
+
+      if($result->num_rows == 0){
+        $stmt = $mysqli->prepare("INSERT INTO `raid_teams` (uuid, nome, tag, membros, leader) VALUE (?, ?, ?, ?, ?)");
+        $clan_members = implode(",", $clan['members']);
+
+
+        $stmt->bind_param("sssss", $clan['uuid'], $clan['nome'], $clan['tag'], $clan_members, $clan['leader']);
+        $stmt->execute();
+
+      }else{
+        $stmt = $mysqli->prepare("UPDATE `raid_teams` SET nome, tag, membros, leader WHERE `uuid` = ?");
+        $clan_members = implode(",", $clan['members']);
+
+
+        $stmt->bind_param("sssss", $clan['nome'], $clan['tag'], $clan_members, $clan['leader'], $arvore['uuid']);
+        $stmt->execute();
+      }
+
+    }
+
+    if($stmt->affected_rows == 0){
+      return 3;
+    }else{
+      return 1;
+    }
+
 
   }
 
@@ -185,6 +219,35 @@ class DustyAPI extends nameUtils {
 
   }
 
+  // função que retorna informações de um clan
+  public function getClan($uuid){
+    global $config;
+    $mysqli = new mysqli($config['database']['ip'], $config['database']['user'], $config['database']['password'], $config['database']['dbname']);
+    $stmt = $mysqli->prepare("SELECT * FROM `raid_times` WHERE `uuid` = ?");
+    $stmt->bind_param("s", $uuid);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if($result->num_rows == 0){
+      return 2;
+    }else{
+      $claninfo = $result->fetch_assoc();
+      $clanmembers = explode(",", $claninfo['members']);
+      $array = array("uuid" => $claninfo['uuid'],
+                      "name" => $claninfo['nome'],
+                      "tag" => $claninfo['tag'],
+                      "leader" => $claninfo['leader'],
+                      "members" => $clanmembers
+                    );
+
+
+
+      return json_encode($array);
+    }
+
+  }
+
+
   // função para criar/atualizar warp de players
   public function addWarpPlayer($data){
 
@@ -202,7 +265,7 @@ class DustyAPI extends nameUtils {
 
   // função pra deletar warp de times
   public function delWarpTeam($data){
-    
+
   }
 
 

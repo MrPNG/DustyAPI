@@ -43,6 +43,15 @@ if(isset($_GET['type']) && $_GET['type'] == "salvararvore"){
   echo $API->salvarArvore($_GET['data']);
 }
 
+if(isset($_GET['type']) && $_GET['type'] == "salvartime"){
+  echo $API->salvarClan($_GET['data']);
+}
+
+if(isset($_GET['type']) && $_GET['type'] == "team"){
+  echo $API->getClan($_GET['uuid']);
+}
+
+
 
 
 
