@@ -39,7 +39,7 @@ if(isset($_GET['type']) && $_GET['type'] == "arvores"){
   echo $API->getArvores();
 }
 
-if(isset($_GET['type']) && $_GET['type'] == "salverarvore"){
+if(isset($_GET['type']) && $_GET['type'] == "salvararvore"){
   echo $API->salvarArvore($_GET['data']);
 }
 
