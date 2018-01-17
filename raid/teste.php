@@ -1,21 +1,23 @@
 <?php
 
-
+/*
 $json = json_decode('
 
-[{"uuid":"blablabla","name":"hq","x":500,"y":64,"z":1000}]
+{"uuiDusty":"blablabla","kits":[{"name":"pvp","date":1515803586534},{"name":"starter","date":1515803125534}]}
 
 
 ', true);
 
 
-foreach($json as $entrada){
-  echo $entrada['x'];
+foreach($json['kits'] as $entrada){
+  echo $entrada['name'];
+  echo $json['uuiDusty'];
 }
-
+*/
 
 require 'functions.php';
 
 $API = new DustyAPI;
+echo $API->getClan("timeteste");
 
 ?>

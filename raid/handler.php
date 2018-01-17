@@ -68,6 +68,14 @@ if(isset($_GET['type']) && $_GET['type'] == "delwarpteam"){
   echo $API->delWarpTeam($_GET['data']);
 }
 
+if(isset($_GET['type']) && $_GET['type'] == "addkit"){
+  echo $API->addKit($_GET['data']);
+}
+
+if(isset($_GET['type']) && $_GET['type'] == "getkit"){
+  echo $API->getKits($_GET['uuidusty']);
+}
+
 
 
 

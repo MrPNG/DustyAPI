@@ -87,7 +87,7 @@ class DustyAPI extends nameUtils {
         $stmt->execute();
 
       }else{
-        $stmt = $mysqli->prepare("UPDATE `raid_arvore` SET x, y, z, date WHERE `uuid` = ?");
+        $stmt = $mysqli->prepare("UPDATE `raid_arvore` SET x=?, y=?, z=?, date=? WHERE `uuid` = ?");
         $stmt->bind_param("iiiis", $arvore['x'], $arvore['y'], $arvore['z'], $arvore['date'], $arvore['uuid']);
         $stmt->execute();
       }
@@ -123,7 +123,7 @@ class DustyAPI extends nameUtils {
         $stmt->execute();
 
       }else{
-        $stmt = $mysqli->prepare("UPDATE `raid_teams` SET nome, tag, membros, leader WHERE `uuid` = ?");
+        $stmt = $mysqli->prepare("UPDATE `raid_teams` SET nome=?, tag=?, membros=?, leader=? WHERE `uuid` = ?");
         $clan_members = implode(",", $clan['membros']);
 
 
@@ -265,7 +265,7 @@ class DustyAPI extends nameUtils {
         $stmt->execute();
 
       }else{
-        $stmt = $mysqli->prepare("UPDATE `raid_players_warps` SET x, y, z, name WHERE `uuidusty` = ? AND `name` = ?");
+        $stmt = $mysqli->prepare("UPDATE `raid_players_warps` SET x=?, y=?, z=?, name=? WHERE `uuidusty` = ? AND `name` = ?");
         $stmt->bind_param("iiisss", $warp['x'], $warp['y'], $warp['z'], $warp['name'], $warp['uuidusty'], $warp['name']);
         $stmt->execute();
       }
@@ -311,7 +311,7 @@ class DustyAPI extends nameUtils {
         $stmt->execute();
 
       }else{
-        $stmt = $mysqli->prepare("UPDATE `raid_players_warps` SET x, y, z, name WHERE `uuid` = ? AND `name` = ?");
+        $stmt = $mysqli->prepare("UPDATE `raid_players_warps` SET x=?, y=?, z=?, name=? WHERE `uuid` = ? AND `name` = ?");
         $stmt->bind_param("iiisss", $warp['x'], $warp['y'], $warp['z'], $warp['name'], $warp['uuid'], $warp['name']);
         $stmt->execute();
       }
@@ -336,6 +336,54 @@ class DustyAPI extends nameUtils {
       $stmt->bind_param("ss", $warp['uuid'], $warp['name']);
       $stmt->execute();
     }
+
+
+  }
+
+  // função pra adicionar um kit
+  public function addKit($data){
+    global $config;
+    $mysqli = new mysqli($config['database']['ip'], $config['database']['user'], $config['database']['password'], $config['database']['dbname']);
+    $json = json_decode($data, true);
+
+    foreach ($json['kits'] as $kit) {
+      $stmt = $mysqli->prepare("SELECT * FROM `raid_kits` WHERE `uuidusty` = ? AND name = ?");
+      $stmt->bind_param("ss", $json['uuidusty'], $kit['name']);
+      $stmt->execute();
+      $result = $stmt->get_result();
+
+      if($result->num_rows == 0){
+        $stmt = $mysqli->prepare("INSERT INTO `raid_kits` (uuidusty, name, date) VALUE (?, ?, ?)");
+        $stmt->bind_param("ssi", $json['uuidusty'], $kit['name'], $kit['date']);
+        $stmt->execute();
+
+      }else{
+        $stmt = $mysqli->prepare("UPDATE `raid_kits` SET name=?, date=? WHERE `uuidusty` = ? AND `name` = ?");
+        $stmt->bind_param("siss", $kit['name'], $kit['date'], $json['uuidusty'], $kit['name']);
+        $stmt->execute();
+
+      }
+
+    }
+
+  }
+
+  // função que retorna os kits de um players
+  public function getKits($uuidusty){
+    global $config;
+    $mysqli = new mysqli($config['database']['ip'], $config['database']['user'], $config['database']['password'], $config['database']['dbname']);
+    $stmt = $mysqli->prepare("SELECT name, date FROM `raid_kits` WHERE `uuidusty` = ?");
+    $stmt->bind_param("s", $uuidusty);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    $array['uuidusty'] = $uuidusty;
+    while($kits = $result->fetch_assoc() ){
+      $array['kits'][] = $kits;
+
+    }
+
+    return json_encode($array);
 
 
   }
