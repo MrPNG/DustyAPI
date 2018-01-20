@@ -400,7 +400,7 @@ class DustyAPI extends nameUtils {
 
       foreach ($data as $player) {
 
-        
+
           $stmt = $mysqli->prepare("SELECT * FROM `raid_accounts` WHERE `email` = ?");
           $stmt->bind_param("s", $player['email']);
           $stmt->execute();
@@ -479,9 +479,9 @@ class DustyAPI extends nameUtils {
     $result = $stmt->get_result();
 
     if($result->num_rows > 0){
-      return false;
+      return '{"status": false}';
     }else{
-      return true;
+      return '{"status": true}';
     }
 
   }

@@ -84,6 +84,10 @@ if(isset($_GET['type']) && $_GET['type'] == "login"){
   echo $API->verifyLogin($_GET['data']);
 }
 
+if(isset($_GET['type']) && $_GET['type'] == "verifyemail"){
+  echo $API->verifyEmail($_GET['email']);
+}
+
 
 
 
