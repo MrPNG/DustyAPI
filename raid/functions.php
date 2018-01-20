@@ -438,6 +438,36 @@ class DustyAPI extends nameUtils {
 
   // função para verificar login
   public function verifyLogin($data){
+    global $config;
+    $mysqli = new mysqli($config['database']['ip'], $config['database']['user'], $config['database']['password'], $config['database']['dbname']);
+    $data = json_decode($data, true);
+    $stmt = $mysqli->prepare("SELECT * FROM `raid_accounts` WHERE `email` = ?");
+    $stmt->bind_param("s", $data['email']);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if($result->num_rows == 1){
+      $array = array("status" => 0, "uuidusty" => "123");
+      while($login = $result->fetch_assoc() ){
+        if($login['password'] === $data['password']){
+          $array['uuidusty'] = $login['uuidusty'];
+          $array['status'] = 1;
+
+          return json_encode($array);
+        }else{
+          $array['uuidusty'] = $login['uuidusty'];
+          $array['status'] = 2;
+
+          return json_encode($array);
+        }
+      }
+    }else{
+      $array['uuidusty'] = $login['uuidusty'];
+      $array['status'] = 2;
+
+      return json_encode($array);
+    }
+
 
   }
 

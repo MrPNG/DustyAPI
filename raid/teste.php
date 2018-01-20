@@ -17,10 +17,10 @@ foreach($json['kits'] as $entrada){
 
 require 'functions.php';
 
+$json = '{"email":"ianszot@outlook.com", "password":123, "uuidusty":123}';
+
 $API = new DustyAPI;
-if($API->verifyEmail("ianszot@outlook.coma") == true){
-  echo "a";
-}
+echo $API->verifyLogin($json);
 
 
 
