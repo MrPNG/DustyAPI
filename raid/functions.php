@@ -407,7 +407,6 @@ class DustyAPI extends nameUtils {
           $result = $stmt->get_result();
           $unix = time() * 1000;
 
-
           if($result->num_rows == 0){
             $stmt = $mysqli->prepare("INSERT INTO `raid_accounts` (uuid, username, email, password, last_update) VALUE (?, ?, ?, ?, ?, ?)");
             $stmt->bind_param("ssssi", $player['uuid'], $player['username'], $player['email'], $player['password'], $unix);
@@ -415,15 +414,7 @@ class DustyAPI extends nameUtils {
 
             return '{"status":1}';
 
-          }else{
-            $stmt = $mysqli->prepare("UPDATE `raid_accounts` SET uuid=?, username=?, email=?, password=?, last_update=? WHERE `email` = ?");
-            $stmt->bind_param("ssssis", $player['uuid'], $player['username'], $player['email'], $player['password'],  $unix, $player['email']);
-            $stmt->execute();
-
-            return '{"status":4}';
-
           }
-
 
       }
 
@@ -444,12 +435,20 @@ class DustyAPI extends nameUtils {
     $stmt->execute();
     $result = $stmt->get_result();
 
+    $unix = time() * 1000;
+
     if($result->num_rows == 1){
       $array = array("status" => 0, "uuid" => "123");
       while($login = $result->fetch_assoc() ){
         if($login['password'] === $data['password']){
+          
           $array['uuid'] = $login['uuid'];
           $array['status'] = 1;
+
+          $stmt = $mysqli->prepare("UPDATE `raid_accounts` SET uuid=?, username=?, last_update=? WHERE `email` = ?");
+          $stmt->bind_param("ssis", $data['uuid'], $data['username'], $unix, $data['email']);
+          $stmt->execute();
+
 
           return json_encode($array);
         }else{
