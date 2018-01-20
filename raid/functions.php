@@ -388,6 +388,76 @@ class DustyAPI extends nameUtils {
 
   }
 
+  ////// REGISTRO ////////
+
+  // função para criar/atualizar uma conta no server
+  public function createAcc($data){
+
+    global $config;
+    $data = json_decode($data, true);
+    $mysqli = new mysqli($config['database']['ip'], $config['database']['user'], $config['database']['password'], $config['database']['dbname']);
+
+
+      foreach ($data as $player) {
+
+        if($this->verifyEmail($player['email']) == true){
+          $stmt = $mysqli->prepare("SELECT * FROM `raid_accounts` WHERE `email` = ?");
+          $stmt->bind_param("s", $player['email']);
+          $stmt->execute();
+          $result = $stmt->get_result();
+          $unix = time() * 1000;
+
+
+          if($result->num_rows == 0){
+            $stmt = $mysqli->prepare("INSERT INTO `raid_accounts` (uuid, uuidusty, username, email, password, last_update) VALUE (?, ?, ?, ?, ?, ?)");
+            $stmt->bind_param("sssssi", $player['uuid'], $player['uuidusty'], $player['username'], $player['email'], $player['password'], $unix);
+            $stmt->execute();
+
+            return '{"status":1}';
+
+          }else{
+            $stmt = $mysqli->prepare("UPDATE `raid_accounts` SET uuid=?, uuidusty=?, username=?, email=?, password=?, last_update=? WHERE `email` = ?");
+            $stmt->bind_param("sssssis", $player['uuid'], $player['uuidusty'], $player['username'], $player['email'], $player['password'],  $unix, $player['email']);
+            $stmt->execute();
+
+            return '{"status":4}';
+
+          }
+
+        }else{
+          return '{"status":5}';
+        }
+      }
+
+      if($stmt->affected_rows == 0){
+        return '{"status":0}';
+      }
+
+
+  }
+
+  // função para verificar login
+  public function verifyLogin($data){
+
+  }
+
+  // função para verificar se o email já está cadastrado
+  public function verifyEmail($email){
+    global $config;
+    $mysqli = new mysqli($config['database']['ip'], $config['database']['user'], $config['database']['password'], $config['database']['dbname']);
+    $stmt = $mysqli->prepare("SELECT * FROM `raid_accounts` WHERE `email` = ?");
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if($result->num_rows > 0){
+      return false;
+    }else{
+      return true;
+    }
+
+  }
+
 
 
 }

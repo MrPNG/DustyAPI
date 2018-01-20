@@ -76,6 +76,10 @@ if(isset($_GET['type']) && $_GET['type'] == "getkit"){
   echo $API->getKits($_GET['uuidusty']);
 }
 
+if(isset($_GET['type']) && $_GET['type'] == "createaccount"){
+  echo $API->createAcc($_GET['data']);
+}
+
 
 
 

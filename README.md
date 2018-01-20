@@ -53,6 +53,10 @@ O status retornará em um simples JSON:
 | 1  | Sucesso                |
 | 2  | Jogador não encontrado |
 | 3  | Não há o que atualizar |
+| 4  | Atualizado             |
+| 5  | Email já cadastrado    |
+
+Não é sempre que um pedido retornará um código de status, só os que eu julgar necessário, mas se precisar, só avisa.
 
 
 Conforme for necessário, mais códigos de status irão ser criados

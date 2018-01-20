@@ -18,6 +18,10 @@ foreach($json['kits'] as $entrada){
 require 'functions.php';
 
 $API = new DustyAPI;
-echo $API->getClan("timeteste");
+if($API->verifyEmail("ianszot@outlook.coma") == true){
+  echo "a";
+}
+
+
 
 ?>
