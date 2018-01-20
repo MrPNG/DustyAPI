@@ -80,6 +80,11 @@ if(isset($_GET['type']) && $_GET['type'] == "createaccount"){
   echo $API->createAcc($_GET['data']);
 }
 
+if(isset($_GET['type']) && $_GET['type'] == "login"){
+  echo $API->verifyLogin($_GET['data']);
+}
+
+
 
 
 
