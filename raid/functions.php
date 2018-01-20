@@ -17,11 +17,11 @@ class DustyAPI extends nameUtils {
   }
 
   // função para retornar o perfil do jogador da uuidusty
-  public function perfilPlayer($uuidusty){
+  public function perfilPlayer($uuid){
     global $config;
     $mysqli = new mysqli($config['database']['ip'], $config['database']['user'], $config['database']['password'], $config['database']['dbname']);
-    $stmt = $mysqli->prepare("SELECT * FROM `raid_perfil` WHERE `uuidusty` = ?");
-    $stmt->bind_param("s", $uuidusty);
+    $stmt = $mysqli->prepare("SELECT * FROM `raid_perfil` WHERE `uuid` = ?");
+    $stmt->bind_param("s", $uuid);
     $stmt->execute();
     $result = $stmt->get_result();
 
@@ -42,18 +42,18 @@ class DustyAPI extends nameUtils {
     $data = json_decode($data, true);
     $mysqli = new mysqli($config['database']['ip'], $config['database']['user'], $config['database']['password'], $config['database']['dbname']);
     foreach ($data as $player) {
-      $stmt = $mysqli->prepare("SELECT * FROM `raid_perfil` WHERE `uuidusty` = ?");
+      $stmt = $mysqli->prepare("SELECT * FROM `raid_perfil` WHERE `uuid` = ?");
       $stmt->bind_param("s", $player['uuid']);
       $stmt->execute();
       $result = $stmt->get_result();
 
       if($result->num_rows == 0){
-        $stmt = $mysqli->prepare("INSERT INTO `raid_perfil` (uuidusty, kills, deaths, killstreak, maxKillStreak, money, clan) VALUE (?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("siiiids", $player['uuidusty'], $player['kills'], $player['deaths'], $player['killstreak'], $player['maxKillStreak'], $player['money'], $player['clan']);
+        $stmt = $mysqli->prepare("INSERT INTO `raid_perfil` (uuid, kills, deaths, killstreak, maxKillStreak, money, clan) VALUE (?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("siiiids", $player['uuid'], $player['kills'], $player['deaths'], $player['killstreak'], $player['maxKillStreak'], $player['money'], $player['clan']);
         $stmt->execute();
 
       }else{
-        $stmt = $mysqli->prepare("UPDATE `perfil` SET kills=?, deaths=?, killstreak=?, maxKillStreak=?, money=?, clan=? WHERE `uuidusty` = ?");
+        $stmt = $mysqli->prepare("UPDATE `perfil` SET kills=?, deaths=?, killstreak=?, maxKillStreak=?, money=?, clan=? WHERE `uuid` = ?");
         $stmt->bind_param("iiiidss", $player['kills'], $player['deaths'], $player['killStreak'], $player['maxKillStreak'], $player['money'],  $player['clan'], $player['uuid']);
         $stmt->execute();
       }
@@ -148,11 +148,11 @@ class DustyAPI extends nameUtils {
   }
 
   // função para pegar as warps de players
-  public function getPlayerWarp($uuidusty){
+  public function getPlayerWarp($uuid){
     global $config;
     $mysqli = new mysqli($config['database']['ip'], $config['database']['user'], $config['database']['password'], $config['database']['dbname']);
-    $stmt = $mysqli->prepare("SELECT * FROM `raid_players_warps` WHERE `uuidusty` = ?");
-    $stmt->bind_param("s", $uuidusty);
+    $stmt = $mysqli->prepare("SELECT * FROM `raid_players_warps` WHERE `uuid` = ?");
+    $stmt->bind_param("s", $uuid);
     $stmt->execute();
     $result = $stmt->get_result();
 
@@ -254,19 +254,19 @@ class DustyAPI extends nameUtils {
     $data = json_decode($data, true);
     $mysqli = new mysqli($config['database']['ip'], $config['database']['user'], $config['database']['password'], $config['database']['dbname']);
     foreach ($data as $warp) {
-      $stmt = $mysqli->prepare("SELECT * FROM `raid_players_warps` WHERE `uuidusty` = ? AND `name` = ?");
+      $stmt = $mysqli->prepare("SELECT * FROM `raid_players_warps` WHERE `uuid` = ? AND `name` = ?");
       $stmt->bind_param("ss", $warp['uuidusty'], $warp['name']);
       $stmt->execute();
       $result = $stmt->get_result();
 
       if($result->num_rows == 0){
-        $stmt = $mysqli->prepare("INSERT INTO `raid_players_warps` (uuidusty, x, y, z, name) VALUE (?, ?, ?, ?, ?)");
-        $stmt->bind_param("siiis", $warp['uuidusty'], $warp['x'], $warp['y'], $warp['z'], $warp['name']);
+        $stmt = $mysqli->prepare("INSERT INTO `raid_players_warps` (uuid, x, y, z, name) VALUE (?, ?, ?, ?, ?)");
+        $stmt->bind_param("siiis", $warp['uuid'], $warp['x'], $warp['y'], $warp['z'], $warp['name']);
         $stmt->execute();
 
       }else{
-        $stmt = $mysqli->prepare("UPDATE `raid_players_warps` SET x=?, y=?, z=?, name=? WHERE `uuidusty` = ? AND `name` = ?");
-        $stmt->bind_param("iiisss", $warp['x'], $warp['y'], $warp['z'], $warp['name'], $warp['uuidusty'], $warp['name']);
+        $stmt = $mysqli->prepare("UPDATE `raid_players_warps` SET x=?, y=?, z=?, name=? WHERE `uuid` = ? AND `name` = ?");
+        $stmt->bind_param("iiisss", $warp['x'], $warp['y'], $warp['z'], $warp['name'], $warp['uuid'], $warp['name']);
         $stmt->execute();
       }
 
@@ -285,9 +285,9 @@ class DustyAPI extends nameUtils {
   public function delWarpPlayer($data){
     global $config;
     $mysqli = new mysqli($config['database']['ip'], $config['database']['user'], $config['database']['password'], $config['database']['dbname']);
-    $stmt = $mysqli->prepare("DELETE FROM `raid_players_warps` WHERE `uuidusty` = ? AND `name` = ?");
+    $stmt = $mysqli->prepare("DELETE FROM `raid_players_warps` WHERE `uuid` = ? AND `name` = ?");
     foreach($data as $warp){
-      $stmt->bind_param("ss", $warp['uuidusty'], $warp['name']);
+      $stmt->bind_param("ss", $warp['uuid'], $warp['name']);
       $stmt->execute();
     }
 
@@ -306,12 +306,12 @@ class DustyAPI extends nameUtils {
       $result = $stmt->get_result();
 
       if($result->num_rows == 0){
-        $stmt = $mysqli->prepare("INSERT INTO `raid_players_warps` (uuidusty, x, y, z, name) VALUE (?, ?, ?, ?, ?)");
+        $stmt = $mysqli->prepare("INSERT INTO `raid_teams_warps` (uuid, x, y, z, name) VALUE (?, ?, ?, ?, ?)");
         $stmt->bind_param("siiis", $warp['uuid'], $warp['x'], $warp['y'], $warp['z'], $warp['name']);
         $stmt->execute();
 
       }else{
-        $stmt = $mysqli->prepare("UPDATE `raid_players_warps` SET x=?, y=?, z=?, name=? WHERE `uuid` = ? AND `name` = ?");
+        $stmt = $mysqli->prepare("UPDATE `raid_teams_warps` SET x=?, y=?, z=?, name=? WHERE `uuid` = ? AND `name` = ?");
         $stmt->bind_param("iiisss", $warp['x'], $warp['y'], $warp['z'], $warp['name'], $warp['uuid'], $warp['name']);
         $stmt->execute();
       }
@@ -347,19 +347,19 @@ class DustyAPI extends nameUtils {
     $json = json_decode($data, true);
 
     foreach ($json['kits'] as $kit) {
-      $stmt = $mysqli->prepare("SELECT * FROM `raid_kits` WHERE `uuidusty` = ? AND name = ?");
-      $stmt->bind_param("ss", $json['uuidusty'], $kit['name']);
+      $stmt = $mysqli->prepare("SELECT * FROM `raid_kits` WHERE `uuid` = ? AND name = ?");
+      $stmt->bind_param("ss", $json['uuid'], $kit['name']);
       $stmt->execute();
       $result = $stmt->get_result();
 
       if($result->num_rows == 0){
-        $stmt = $mysqli->prepare("INSERT INTO `raid_kits` (uuidusty, name, date) VALUE (?, ?, ?)");
-        $stmt->bind_param("ssi", $json['uuidusty'], $kit['name'], $kit['date']);
+        $stmt = $mysqli->prepare("INSERT INTO `raid_kits` (uuid, name, date) VALUE (?, ?, ?)");
+        $stmt->bind_param("ssi", $json['uuid'], $kit['name'], $kit['date']);
         $stmt->execute();
 
       }else{
-        $stmt = $mysqli->prepare("UPDATE `raid_kits` SET name=?, date=? WHERE `uuidusty` = ? AND `name` = ?");
-        $stmt->bind_param("siss", $kit['name'], $kit['date'], $json['uuidusty'], $kit['name']);
+        $stmt = $mysqli->prepare("UPDATE `raid_kits` SET name=?, date=? WHERE `uuid` = ? AND `name` = ?");
+        $stmt->bind_param("siss", $kit['name'], $kit['date'], $json['uuid'], $kit['name']);
         $stmt->execute();
 
       }
@@ -369,15 +369,15 @@ class DustyAPI extends nameUtils {
   }
 
   // função que retorna os kits de um players
-  public function getKits($uuidusty){
+  public function getKits($uuid){
     global $config;
     $mysqli = new mysqli($config['database']['ip'], $config['database']['user'], $config['database']['password'], $config['database']['dbname']);
-    $stmt = $mysqli->prepare("SELECT name, date FROM `raid_kits` WHERE `uuidusty` = ?");
-    $stmt->bind_param("s", $uuidusty);
+    $stmt = $mysqli->prepare("SELECT name, date FROM `raid_kits` WHERE `uuid` = ?");
+    $stmt->bind_param("s", $uuid);
     $stmt->execute();
     $result = $stmt->get_result();
 
-    $array['uuidusty'] = $uuidusty;
+    $array['uuid'] = $uuid;
     while($kits = $result->fetch_assoc() ){
       $array['kits'][] = $kits;
 
@@ -401,6 +401,7 @@ class DustyAPI extends nameUtils {
       foreach ($data as $player) {
 
         if($this->verifyEmail($player['email']) == true){
+          
           $stmt = $mysqli->prepare("SELECT * FROM `raid_accounts` WHERE `email` = ?");
           $stmt->bind_param("s", $player['email']);
           $stmt->execute();
@@ -409,15 +410,15 @@ class DustyAPI extends nameUtils {
 
 
           if($result->num_rows == 0){
-            $stmt = $mysqli->prepare("INSERT INTO `raid_accounts` (uuid, uuidusty, username, email, password, last_update) VALUE (?, ?, ?, ?, ?, ?)");
-            $stmt->bind_param("sssssi", $player['uuid'], $player['uuidusty'], $player['username'], $player['email'], $player['password'], $unix);
+            $stmt = $mysqli->prepare("INSERT INTO `raid_accounts` (uuid, username, email, password, last_update) VALUE (?, ?, ?, ?, ?, ?)");
+            $stmt->bind_param("ssssi", $player['uuid'], $player['username'], $player['email'], $player['password'], $unix);
             $stmt->execute();
 
             return '{"status":1}';
 
           }else{
-            $stmt = $mysqli->prepare("UPDATE `raid_accounts` SET uuid=?, uuidusty=?, username=?, email=?, password=?, last_update=? WHERE `email` = ?");
-            $stmt->bind_param("sssssis", $player['uuid'], $player['uuidusty'], $player['username'], $player['email'], $player['password'],  $unix, $player['email']);
+            $stmt = $mysqli->prepare("UPDATE `raid_accounts` SET uuid=?, username=?, email=?, password=?, last_update=? WHERE `email` = ?");
+            $stmt->bind_param("ssssis", $player['uuid'], $player['username'], $player['email'], $player['password'],  $unix, $player['email']);
             $stmt->execute();
 
             return '{"status":4}';
@@ -447,22 +448,22 @@ class DustyAPI extends nameUtils {
     $result = $stmt->get_result();
 
     if($result->num_rows == 1){
-      $array = array("status" => 0, "uuidusty" => "123");
+      $array = array("status" => 0, "uuid" => "123");
       while($login = $result->fetch_assoc() ){
         if($login['password'] === $data['password']){
-          $array['uuidusty'] = $login['uuidusty'];
+          $array['uuid'] = $login['uuid'];
           $array['status'] = 1;
 
           return json_encode($array);
         }else{
-          $array['uuidusty'] = $login['uuidusty'];
+          $array['uuid'] = $login['uuid'];
           $array['status'] = 2;
 
           return json_encode($array);
         }
       }
     }else{
-      $array['uuidusty'] = $login['uuidusty'];
+      $array['uuid'] = $login['uuid'];
       $array['status'] = 2;
 
       return json_encode($array);

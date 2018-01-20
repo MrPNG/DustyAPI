@@ -16,11 +16,11 @@ if($API->checarIP($ip)){
 
 
 if(isset($_GET['type']) && $_GET['type'] == "perfil"){
-  echo $API->perfilPlayer($_GET['uuidusty']);
+  echo $API->perfilPlayer($_GET['uuid']);
 }
 
 if(isset($_GET['type']) && $_GET['type'] == "getplayerwarp"){
-  echo $API->getPlayerWarp($_GET['uuidusty']);
+  echo $API->getPlayerWarp($_GET['uuid']);
 }
 
 if(isset($_GET['type']) && $_GET['type'] == "getteamwarp"){
@@ -73,7 +73,7 @@ if(isset($_GET['type']) && $_GET['type'] == "addkit"){
 }
 
 if(isset($_GET['type']) && $_GET['type'] == "getkit"){
-  echo $API->getKits($_GET['uuidusty']);
+  echo $API->getKits($_GET['uuid']);
 }
 
 if(isset($_GET['type']) && $_GET['type'] == "createaccount"){
