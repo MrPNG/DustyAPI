@@ -88,6 +88,10 @@ if(isset($_GET['type']) && $_GET['type'] == "verifyemail"){
   echo $API->verifyEmail($_GET['email']);
 }
 
+if(isset($_GET['type']) && $_GET['type'] == "updateuser"){
+  echo $API->updateUser($_GET['data']);
+}
+
 
 
 

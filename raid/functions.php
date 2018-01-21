@@ -435,28 +435,14 @@ class DustyAPI extends nameUtils {
     $stmt->execute();
     $result = $stmt->get_result();
 
-    $unix = time() * 1000;
-
     if($result->num_rows == 1){
-      $array = array("status" => 0, "uuid" => "123");
+      $array = array("status" => 0, "uuid" => "123", "password" => "123");
       while($login = $result->fetch_assoc() ){
-        if($login['password'] === $data['password']){
+        $array['password'] = $login['password'];
+        $array['uuid'] = $login['uuid'];
+        $array['status'] = 1;
 
-          $array['uuid'] = $login['uuid'];
-          $array['status'] = 1;
-
-          $stmt = $mysqli->prepare("UPDATE `raid_accounts` SET uuid=?, username=?, last_update=? WHERE `email` = ?");
-          $stmt->bind_param("ssis", $data['uuid'], $data['username'], $unix, $data['email']);
-          $stmt->execute();
-
-
-          return json_encode($array);
-        }else{
-          $array['uuid'] = $login['uuid'];
-          $array['status'] = 2;
-
-          return json_encode($array);
-        }
+        return json_encode($array);
       }
     }else{
       $array['uuid'] = $login['uuid'];
@@ -484,6 +470,23 @@ class DustyAPI extends nameUtils {
     }
 
   }
+
+
+  public function updateUser($data){
+    global $config;
+    $unix = time() * 1000;
+
+    $data = json_decode($data, true);
+    $mysqli = new mysqli($config['database']['ip'], $config['database']['user'], $config['database']['password'], $config['database']['dbname']);
+    $stmt = $mysqli->prepare("UPDATE `raid_accounts` SET uuid=?, username=?, last_update=? WHERE `uuid` = ?");
+    $stmt->bind_param("ssis", $data['uuid'], $data['username'], $unix, $data['uuid']);
+    $stmt->execute();
+
+    return '{"status": 4}';
+
+
+  }
+
 
 
 
