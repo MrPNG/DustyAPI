@@ -408,7 +408,7 @@ class DustyAPI extends nameUtils {
           $unix = time() * 1000;
 
           if($result->num_rows == 0){
-            $stmt = $mysqli->prepare("INSERT INTO `raid_accounts` (uuid, username, email, password, last_update) VALUE (?, ?, ?, ?, ?, ?)");
+            $stmt = $mysqli->prepare("INSERT INTO `raid_accounts` (uuid, username, email, password, last_update) VALUE (?, ?, ?, ?, ?)");
             $stmt->bind_param("ssssi", $player['uuid'], $player['username'], $player['email'], $player['password'], $unix);
             $stmt->execute();
 
@@ -441,7 +441,7 @@ class DustyAPI extends nameUtils {
       $array = array("status" => 0, "uuid" => "123");
       while($login = $result->fetch_assoc() ){
         if($login['password'] === $data['password']){
-          
+
           $array['uuid'] = $login['uuid'];
           $array['status'] = 1;
 
