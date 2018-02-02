@@ -5,6 +5,7 @@
 require 'config.php';
 require 'functions.php';
 $API = new DustyAPI;
+$Utils = new nameUtils;
 header('Content-Type: application/json');
 if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
     $ip = $_SERVER['HTTP_CLIENT_IP'];
@@ -16,6 +17,14 @@ if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
 
 if($API->checarIP($ip)){
 // Se o IP do cara conferir, continuar
+
+if(isset($_GET['type']) && $_GET['type'] == "name2uuid"){
+  echo $Utils->name2uuid($_GET['name']);
+}
+
+if(isset($_GET['type']) && $_GET['type'] == "uuid2name"){
+  echo $Utils->uuid2name($_GET['uuid']);
+}
 
 if(isset($_POST['type']) && $_POST['type'] == "banir"){
   echo $API->banirPlayer($_POST['uuid'], $_POST['motivo'], $_POST['punidor'], $_POST['tempo']);

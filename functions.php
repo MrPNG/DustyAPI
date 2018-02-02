@@ -111,6 +111,14 @@ class nameUtils {
     return $uuid;
   }
 
+  public function isPirate($uuid){
+    if(mb_substr($uuid, 14, 1) == 3){
+      return true;
+    }else {
+      return false;
+    }
+  }
+
 
 }
 
@@ -348,235 +356,22 @@ class DustyAPI extends nameUtils {
 
   }
 
-    // Função parar carregar os itens da loja de acordo com o tipo deles (kit, vantagem, vip, etc)
-    public function getItensLoja($type){
-      global $config;
 
-      $mysqli = new mysqli($config['database']['ip'], $config['database']['user'], $config['database']['password'], $config['database']['dbname']);
-      $stmt = $mysqli->prepare("SELECT * FROM `loja_items` WHERE `itemType` = ?");
-      $stmt->bind_param("i", $type);
-      $stmt->execute();
-      $result = $stmt->get_result();
+    // OPEN CART //
+    // Aqui começa a parte do OpenCart, ignore tudo da outra loja //
 
-        $array = array();
-        while($dados = $result->fetch_assoc()){
-        $array[] = $dados;
-        }
-      return json_encode($array);
-    }
+  public function getOCCompra($data){
+    global $config;
+    $mysqli = new mysqli($config['database']['ip'], $config['database']['user'], $config['database']['password'], "dustycom_opencart");
 
-    // Função para dar kit a um player
-    public function addKit($kit, $uuid){
-      global $config;
-      $mysqli = new mysqli($config['database']['ip'], $config['database']['user'], $config['database']['password'], $config['database']['dbname']);
-      $stmt = $mysqli->prepare("INSERT INTO `players_kits` (uuid, kit) VALUES (?, ?)");
-      $stmt->bind_param("si", $uuid, $kit);
-      $stmt->execute();
-
-      return $this->StatusRetorno(1);
-    }
-
-    // Função para dar vantagem a um player
-    public function addVantagem($vantagem, $uuid, $datafinal){
-      global $config;
-      $mysqli = new mysqli($config['database']['ip'], $config['database']['user'], $config['database']['password'], $config['database']['dbname']);
-
-      $stmt = $mysqli->prepare("INSERT INTO `players_vantagens` (uuid, vantagem, datafinal) VALUES (?, ?, ?)");
-      $stmt->bind_param("sis", $uuid, $vantagem, $datafinal);
-      $stmt->execute();
-
-      return $this->StatusRetorno(1);
-    }
-
-    // Função para dar vip a um player
-    public function addVIP($vip, $uuid, $datafinal){
-      global $config;
-      $mysqli = new mysqli($config['database']['ip'], $config['database']['user'], $config['database']['password'], $config['database']['dbname']);
-      $stmt = $mysqli->prepare("INSERT INTO `players_vip` (uuid, vip, datafinal) VALUES (?, ?, ?)");
-      $stmt->bind_param("sis", $uuid, $vip, $datafinal);
-      $stmt->execute();
-
-      return $this->StatusRetorno(1);
-    }
-
-    // Função para dar identificar que tipo de compra é
-    public function getItemType($id){
-      global $config;
-      $mysqli = new mysqli($config['database']['ip'], $config['database']['user'], $config['database']['password'], $config['database']['dbname']);
-      $stmt = $mysqli->prepare("SELECT * FROM `loja_items` WHERE `itemID` = ?");
-      $stmt->bind_param("i", $id);
-      $stmt->execute();
-      $result = $stmt->get_result();
-
-        while($dados = $result->fetch_assoc()){
-          $id = $dados['itemType'];
-        }
-
-      return $id;
-    }
-
-    // Função para ver informações de um item
-    public function getItem($id){
-      global $config;
-      $mysqli = new mysqli($config['database']['ip'], $config['database']['user'], $config['database']['password'], $config['database']['dbname']);
-      $stmt = $mysqli->prepare("SELECT * FROM `loja_items` WHERE `itemID` = ?");
-      $stmt->bind_param("i", $id);
-      $stmt->execute();
-      $result = $stmt->get_result();
-    
-        $dados = array();
-        while($dados = $result->fetch_assoc()){
-          $id = $dados;
-        }
-
-      return json_encode($id);
-    }
-
-    // função para ver duração do item
-    public function getItemDuration($id){
-      global $config;
-      $mysqli = new mysqli($config['database']['ip'], $config['database']['user'], $config['database']['password'], $config['database']['dbname']);
-      $stmt = $mysqli->prepare("SELECT * FROM `loja_items` WHERE `itemID` = ?");
-      $stmt->bind_param("s", $id);
-      $stmt->execute();
-      $result = $stmt->get_result();
-
-        while($dados = $result->fetch_assoc()){
-          $duration = $dados['itemDuration'];
-        }
-
-      return $duration;
-    }
-
-    // Função para descobrir o comprador de certo item
-    public function getBuyer($transID){
-      global $config;
-      $mysqli = new mysqli($config['database']['ip'], $config['database']['user'], $config['database']['password'], $config['database']['dbname']);
-      $stmt = $mysqli->prepare("SELECT * FROM `players_compras` WHERE `transaction` = ?");
-      $stmt->bind_param("s", $transID);
-      $stmt->execute();
-      $result = $stmt->get_result();
-
-        while($dados = $result->fetch_assoc()){
-          $uuid = $dados['uuid'];
-        }
-
-      return $uuid;
-    }
-
-    // Função para adicionar um comprador na lista
-    public function addBuyer($uuid, $transaction){
-      global $config;
-      $mysqli = new mysqli($config['database']['ip'], $config['database']['user'], $config['database']['password'], $config['database']['dbname']);
-      $stmt = $mysqli->prepare("INSERT INTO `players_compras` (uuid, transaction) VALUES (?, ?)");
-      $code = str_replace("-", "", $transaction);
-      $stmt->bind_param("ss", $uuid, $code);
-      $stmt->execute();
-
-      return $this->StatusRetorno(1);
-    }
-
-    // função para checar se já a compra ja foi cadastrada
-    public function checkTransaction($trans){
-      global $config;
-      $mysqli = new mysqli($config['database']['ip'], $config['database']['user'], $config['database']['password'], $config['database']['dbname']);
-      $stmt = $mysqli->prepare("SELECT * FROM `players_compras` WHERE `transaction` = ?");
-      $stmt->bind_param("s", $trans);
-      $stmt->execute();
-      $result = $stmt->get_result();
-
-      if($result->num_rows == 1){
-        $resultrows = 0;
-      }else{
-        $resultrows = 1;
-      }
-
-      return $resultrows;
-    }
-
-    // função para ver as compras de um player
-    public function getCompras($uuid){
-      global $config;
-      $mysqli = new mysqli($config['database']['ip'], $config['database']['user'], $config['database']['password'], $config['database']['dbname']);
-
-      $array = array();
-
-      $stmt = $mysqli->prepare("SELECT id, kit FROM `players_kits` WHERE `uuid` = ?");
-      $stmt->bind_param("s", $uuid);
-      $stmt->execute();
-      $result_vip = $stmt->get_result();
-
-      while($result_viparray = $result_vip->fetch_assoc()){
-        $array['compras']['kit'][] = $result_viparray;
-      }
-
-      $stmt = $mysqli->prepare("SELECT id, vantagem, datafinal FROM `players_vantagens` WHERE `uuid` = ?");
-      $stmt->bind_param("s", $uuid);
-      $stmt->execute();
-      $result_vant = $stmt->get_result();
-
-      while($result_vantarray = $result_vant->fetch_assoc()){
-        $array['compras']['vantagem'][] = $result_vantarray;
-      }
-
-      $stmt = $mysqli->prepare("SELECT id, vip, datafinal FROM `players_vip` WHERE `uuid` = ?");
-      $stmt->bind_param("s", $uuid);
-      $stmt->execute();
-      $result_vip = $stmt->get_result();
-
-      while($result_viparray = $result_vip->fetch_assoc()){
-        $array['compras']['vip'][] = $result_viparray;
-      }
-
-      return json_encode($array);
+    if($this->isPirate($uuid) == true){
+    //  $stmt = $mysqli->prepare("SELECT * FROM `oc_orders` WHERE");
 
     }
 
-    // função para adicionar/atualizar compras
-    public function addCompra($action, $json, $id){
-      global $config;
-      $json = json_decode($json, true);
 
 
-      if($action == "add"){
-        switch($json['tipo']){
-          case 1:
-            $this->addKit($json['item'], $json['uuid']);
-          break;
-          case 2:
-            $this->addVIP($json['item'], $json['uuid'], $json['datafinal']);
-          break;
-          case 3:
-            $this->addVantagem($json['item'], $json['uuid'], $json['datafinal']);
-          break;
-        }
-
-      }elseif ($action == "update") {
-        switch($json['tipo']){
-          case 1:
-            $table = "players_kits";
-            $row = "kit";
-          break;
-          case 2:
-            $table = "players_vip";
-            $row = "vip";
-          break;
-          case 3:
-            $table = "players_vantagens";
-            $row = "vantagem";
-          break;
-          }
-
-          $mysqli = new mysqli($config['database']['ip'], $config['database']['user'], $config['database']['password'], $config['database']['dbname']);
-
-          $stmt = $mysqli->prepare("UPDATE " . $table . " SET uuid=?, " . $row . "=?, datafinal=? WHERE `id` = ?");
-          $stmt->bind_param("ssii", $json['uuid'], $json['item'], $json['datafinal'], $id);
-          $stmt->execute();
-
-
-
-        }
-    }
+  }
 
 }
 
