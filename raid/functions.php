@@ -48,13 +48,13 @@ class DustyAPI extends nameUtils {
       $result = $stmt->get_result();
 
       if($result->num_rows == 0){
-        $stmt = $mysqli->prepare("INSERT INTO `raid_perfil` (uuid, kills, deaths, killstreak, maxKillStreak, money, clan, x, y, z, world) VALUE (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("siiiidsddds", $player['uuid'], $player['kills'], $player['deaths'], $player['killstreak'], $player['maxKillStreak'], $player['money'], $player['clan'], $player['x'], $player['y'], $player['z'], $player['world']);
+        $stmt = $mysqli->prepare("INSERT INTO `raid_perfil` (uuid, kills, deaths, killstreak, maxKillStreak, money, clan, x, y, z, world, yaw, pitch) VALUE (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("siiiidsdddsdd", $player['uuid'], $player['kills'], $player['deaths'], $player['killstreak'], $player['maxKillStreak'], $player['money'], $player['clan'], $player['x'], $player['y'], $player['z'], $player['world'], $player['yaw'], $player['pitch']);
         $stmt->execute();
 
       }else{
-        $stmt = $mysqli->prepare("UPDATE `perfil` SET kills=?, deaths=?, killstreak=?, maxKillStreak=?, money=?, clan=?, x=?, y=?, z=?, world=? WHERE `uuid` = ?");
-        $stmt->bind_param("iiiidsdddss", $player['kills'], $player['deaths'], $player['killStreak'], $player['maxKillStreak'], $player['money'],  $player['clan'], $player['x'], $player['y'], $player['z'], $player['world'], $player['uuid']);
+        $stmt = $mysqli->prepare("UPDATE `perfil` SET kills=?, deaths=?, killstreak=?, maxKillStreak=?, money=?, clan=?, x=?, y=?, z=?, world=?, yaw=?, pitch=? WHERE `uuid` = ?");
+        $stmt->bind_param("iiiidsdddsdds", $player['kills'], $player['deaths'], $player['killStreak'], $player['maxKillStreak'], $player['money'],  $player['clan'], $player['x'], $player['y'], $player['z'], $player['world'], $player['yaw'], $player['pitch'], $player['uuid']);
         $stmt->execute();
       }
 
@@ -260,13 +260,13 @@ class DustyAPI extends nameUtils {
       $result = $stmt->get_result();
 
       if($result->num_rows == 0){
-        $stmt = $mysqli->prepare("INSERT INTO `raid_players_warps` (uuid, x, y, z, world, name) VALUE (?, ?, ?, ?, ?)");
-        $stmt->bind_param("siiis", $warp['uuid'], $warp['x'], $warp['y'], $warp['z'], $warp['world'],$warp['name']);
+        $stmt = $mysqli->prepare("INSERT INTO `raid_players_warps` (uuid, x, y, z, world, yaw, pitch, name) VALUE (?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("siiisdds", $warp['uuid'], $warp['x'], $warp['y'], $warp['z'], $warp['world'], $warp['yaw'], $warp['pitch'], $warp['name']);
         $stmt->execute();
 
       }else{
-        $stmt = $mysqli->prepare("UPDATE `raid_players_warps` SET x=?, y=?, z=?, world=?, name=? WHERE `uuid` = ? AND `name` = ?");
-        $stmt->bind_param("iiisss", $warp['x'], $warp['y'], $warp['z'], $warp['name'], $warp['uuid'], $warp['name']);
+        $stmt = $mysqli->prepare("UPDATE `raid_players_warps` SET x=?, y=?, z=?, world=?, yaw=?, pitch=?, name=? WHERE `uuid` = ? AND `name` = ?");
+        $stmt->bind_param("iiisddsss", $warp['x'], $warp['y'], $warp['z'], $warp['world'], $warp['yaw'], $warp['pitch'], $warp['name'], $warp['uuid'], $warp['name']);
         $stmt->execute();
       }
 
@@ -306,13 +306,13 @@ class DustyAPI extends nameUtils {
       $result = $stmt->get_result();
 
       if($result->num_rows == 0){
-        $stmt = $mysqli->prepare("INSERT INTO `raid_teams_warps` (uuid, x, y, z, world, name) VALUE (?, ?, ?, ?, ?)");
-        $stmt->bind_param("siiis", $warp['uuid'], $warp['x'], $warp['y'], $warp['z'], $warp['world'], $warp['name']);
+        $stmt = $mysqli->prepare("INSERT INTO `raid_teams_warps` (uuid, x, y, z, world, yaw, pitch, name) VALUE (?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("siiisdds", $warp['uuid'], $warp['x'], $warp['y'], $warp['z'], $warp['world'], $warp['yaw'], $warp['pitch'], $warp['name']);
         $stmt->execute();
 
       }else{
-        $stmt = $mysqli->prepare("UPDATE `raid_teams_warps` SET x=?, y=?, z=?, world=?, name=? WHERE `uuid` = ? AND `name` = ?");
-        $stmt->bind_param("iiisss", $warp['x'], $warp['y'], $warp['z'], $warp['world'], $warp['name'], $warp['uuid'], $warp['name']);
+        $stmt = $mysqli->prepare("UPDATE `raid_teams_warps` SET x=?, y=?, z=?, world=?, yaw=?, pitch=?, name=? WHERE `uuid` = ? AND `name` = ?");
+        $stmt->bind_param("iiisddsss", $warp['x'], $warp['y'], $warp['z'], $warp['world'], $warp['yaw'], $warp['pitch'], $warp['name'], $warp['uuid'], $warp['name']);
         $stmt->execute();
       }
 
