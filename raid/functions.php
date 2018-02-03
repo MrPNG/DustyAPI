@@ -260,12 +260,12 @@ class DustyAPI extends nameUtils {
       $result = $stmt->get_result();
 
       if($result->num_rows == 0){
-        $stmt = $mysqli->prepare("INSERT INTO `raid_players_warps` (uuid, x, y, z, name) VALUE (?, ?, ?, ?, ?)");
-        $stmt->bind_param("siiis", $warp['uuid'], $warp['x'], $warp['y'], $warp['z'], $warp['name']);
+        $stmt = $mysqli->prepare("INSERT INTO `raid_players_warps` (uuid, x, y, z, world, name) VALUE (?, ?, ?, ?, ?)");
+        $stmt->bind_param("siiis", $warp['uuid'], $warp['x'], $warp['y'], $warp['z'], $warp['world'],$warp['name']);
         $stmt->execute();
 
       }else{
-        $stmt = $mysqli->prepare("UPDATE `raid_players_warps` SET x=?, y=?, z=?, name=? WHERE `uuid` = ? AND `name` = ?");
+        $stmt = $mysqli->prepare("UPDATE `raid_players_warps` SET x=?, y=?, z=?, world=?, name=? WHERE `uuid` = ? AND `name` = ?");
         $stmt->bind_param("iiisss", $warp['x'], $warp['y'], $warp['z'], $warp['name'], $warp['uuid'], $warp['name']);
         $stmt->execute();
       }
@@ -306,13 +306,13 @@ class DustyAPI extends nameUtils {
       $result = $stmt->get_result();
 
       if($result->num_rows == 0){
-        $stmt = $mysqli->prepare("INSERT INTO `raid_teams_warps` (uuid, x, y, z, name) VALUE (?, ?, ?, ?, ?)");
-        $stmt->bind_param("siiis", $warp['uuid'], $warp['x'], $warp['y'], $warp['z'], $warp['name']);
+        $stmt = $mysqli->prepare("INSERT INTO `raid_teams_warps` (uuid, x, y, z, world, name) VALUE (?, ?, ?, ?, ?)");
+        $stmt->bind_param("siiis", $warp['uuid'], $warp['x'], $warp['y'], $warp['z'], $warp['world'], $warp['name']);
         $stmt->execute();
 
       }else{
-        $stmt = $mysqli->prepare("UPDATE `raid_teams_warps` SET x=?, y=?, z=?, name=? WHERE `uuid` = ? AND `name` = ?");
-        $stmt->bind_param("iiisss", $warp['x'], $warp['y'], $warp['z'], $warp['name'], $warp['uuid'], $warp['name']);
+        $stmt = $mysqli->prepare("UPDATE `raid_teams_warps` SET x=?, y=?, z=?, world=?, name=? WHERE `uuid` = ? AND `name` = ?");
+        $stmt->bind_param("iiisss", $warp['x'], $warp['y'], $warp['z'], $warp['world'], $warp['name'], $warp['uuid'], $warp['name']);
         $stmt->execute();
       }
 
