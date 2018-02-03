@@ -48,13 +48,13 @@ class DustyAPI extends nameUtils {
       $result = $stmt->get_result();
 
       if($result->num_rows == 0){
-        $stmt = $mysqli->prepare("INSERT INTO `raid_perfil` (uuid, kills, deaths, killstreak, maxKillStreak, money, clan, x, y, z) VALUE (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("siiiidsddd", $player['uuid'], $player['kills'], $player['deaths'], $player['killstreak'], $player['maxKillStreak'], $player['money'], $player['clan'], $player['x'], $player['y'], $player['z']);
+        $stmt = $mysqli->prepare("INSERT INTO `raid_perfil` (uuid, kills, deaths, killstreak, maxKillStreak, money, clan, x, y, z, world) VALUE (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("siiiidsddds", $player['uuid'], $player['kills'], $player['deaths'], $player['killstreak'], $player['maxKillStreak'], $player['money'], $player['clan'], $player['x'], $player['y'], $player['z'], $player['world']);
         $stmt->execute();
 
       }else{
-        $stmt = $mysqli->prepare("UPDATE `perfil` SET kills=?, deaths=?, killstreak=?, maxKillStreak=?, money=?, clan=?, x=?, y=?, z=? WHERE `uuid` = ?");
-        $stmt->bind_param("iiiidsddds", $player['kills'], $player['deaths'], $player['killStreak'], $player['maxKillStreak'], $player['money'],  $player['clan'], $player['x'], $player['y'], $player['z'], $player['uuid']);
+        $stmt = $mysqli->prepare("UPDATE `perfil` SET kills=?, deaths=?, killstreak=?, maxKillStreak=?, money=?, clan=?, x=?, y=?, z=?, world=? WHERE `uuid` = ?");
+        $stmt->bind_param("iiiidsdddss", $player['kills'], $player['deaths'], $player['killStreak'], $player['maxKillStreak'], $player['money'],  $player['clan'], $player['x'], $player['y'], $player['z'], $player['world'], $player['uuid']);
         $stmt->execute();
       }
 
